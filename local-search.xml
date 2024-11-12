@@ -4,6 +4,37 @@
   
   
   <entry>
+    <title>Hexo 折腾笔记</title>
+    <link href="/2024/11/13/hexo%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/"/>
+    <url>/2024/11/13/hexo%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Hexo-折腾笔记"><a href="#Hexo-折腾笔记" class="headerlink" title="Hexo 折腾笔记"></a>Hexo 折腾笔记</h1><blockquote><p>贴上我的Makefile</p></blockquote><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs makefile">COMMIT_DESCRIPTION ?= <span class="hljs-string">&quot;nothing&quot;</span><br>REPO_PATH ?= ../xjimlinx.github.io<br><span class="hljs-section">update: clean</span><br>hexo generate<br><br><span class="hljs-section">clean:</span><br>hexo clean<br><br><span class="hljs-section">update-repo: update</span><br>cp -r ./public/* ../xjimlinx.github.io/ <br><br><span class="hljs-section">push: commit</span><br>cd $&#123;REPO_PATH&#125; &amp;&amp; git push<br><br><span class="hljs-section">commit: add</span><br>cd $&#123;REPO_PATH&#125; &amp;&amp; git commit -m $&#123;COMMIT_DESCRIPTION&#125;<br><br><span class="hljs-section">add:</span><br>cd $&#123;REPO_PATH&#125; &amp;&amp; git add .<br><br><span class="hljs-meta"><span class="hljs-keyword">.PHONY</span>: clean add commit push update</span><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>网站搭建</category>
+      
+      <category>Web</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>个人博客</tag>
+      
+      <tag>Web</tag>
+      
+      <tag>网站搭建</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>FS of NPUcore-LA</title>
     <link href="/2024/11/10/FS%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%83%A8%E5%88%86/"/>
     <url>/2024/11/10/FS%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%83%A8%E5%88%86/</url>
@@ -31,11 +62,11 @@
   
   
   <entry>
-    <title>Makefile 小记</title>
+    <title>Makefile小记</title>
     <link href="/2024/11/05/Makefile%20%E5%B0%8F%E8%AE%B0/"/>
     <url>/2024/11/05/Makefile%20%E5%B0%8F%E8%AE%B0/</url>
     
-    <content type="html"><![CDATA[<h1 id="Makefile-小记"><a href="#Makefile-小记" class="headerlink" title="Makefile 小记"></a>Makefile 小记</h1><h2 id="赋值语句"><a href="#赋值语句" class="headerlink" title="赋值语句"></a>赋值语句</h2><h3 id="1"><a href="#1" class="headerlink" title="1. ="></a>1. <code>=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>&#x3D;</td><td>变量的值是整个makefile中最后被指定的值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile">VIR_A = A<br>VIR_B = <span class="hljs-variable">$(VIR_A)</span> B<br>VIR_A = AA<br></code></pre></td></tr></table></figure><p>最终 <code>VIR_B</code> 的值是”AA B” 而不是 “A B”</p><p>在make时，会把整个makefile展开，然后决定最后变量的值</p><h3 id="2"><a href="#2" class="headerlink" title="2. :="></a>2. <code>:=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>:&#x3D;</td><td>直接赋值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile">VIR_A = A<br>VIR_B = <span class="hljs-variable">$(VIR_A)</span> B<br>VIR_A = AA<br></code></pre></td></tr></table></figure><p>最终 <code>VIR_B</code> 的值是”A B”</p><h3 id="3"><a href="#3" class="headerlink" title="3. ?="></a>3. <code>?=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>?&#x3D;</td><td>如果变量没有被赋值，则赋予等号后面的值，相当于默认值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-comment"># Makefile1</span><br>VIR ?= new_value<br><span class="hljs-comment"># 上面就会等于 new_value</span><br></code></pre></td></tr></table></figure><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-comment"># Makefile2</span><br>VIR := old_value<br>VIR ?= new_value<br><span class="hljs-comment"># 上面就会等于 old_value</span><br></code></pre></td></tr></table></figure><h3 id="4"><a href="#4" class="headerlink" title="4. +="></a>4. <code>+=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>+&#x3D;</td><td>将等号后面的值添加到前面的变量上，中间会插入空格</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs makefile">varA := a<br>varA += 1<br><span class="hljs-section">debug:</span><br>@echo <span class="hljs-variable">$(varA)</span><br><span class="hljs-comment"># 输出</span><br><span class="hljs-comment"># a a</span><br></code></pre></td></tr></table></figure>]]></content>
+    <content type="html"><![CDATA[<h1 id="Makefile小记"><a href="#Makefile小记" class="headerlink" title="Makefile小记"></a>Makefile小记</h1><h2 id="赋值语句"><a href="#赋值语句" class="headerlink" title="赋值语句"></a>赋值语句</h2><h3 id="1"><a href="#1" class="headerlink" title="1. ="></a>1. <code>=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>&#x3D;</td><td>变量的值是整个makefile中最后被指定的值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile">VIR_A = A<br>VIR_B = <span class="hljs-variable">$(VIR_A)</span> B<br>VIR_A = AA<br></code></pre></td></tr></table></figure><p>最终 <code>VIR_B</code> 的值是”AA B” 而不是 “A B”</p><p>在make时，会把整个makefile展开，然后决定最后变量的值</p><h3 id="2"><a href="#2" class="headerlink" title="2. :="></a>2. <code>:=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>:&#x3D;</td><td>直接赋值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile">VIR_A = A<br>VIR_B = <span class="hljs-variable">$(VIR_A)</span> B<br>VIR_A = AA<br></code></pre></td></tr></table></figure><p>最终 <code>VIR_B</code> 的值是”A B”</p><h3 id="3"><a href="#3" class="headerlink" title="3. ?="></a>3. <code>?=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>?&#x3D;</td><td>如果变量没有被赋值，则赋予等号后面的值，相当于默认值</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-comment"># Makefile1</span><br>VIR ?= new_value<br><span class="hljs-comment"># 上面就会等于 new_value</span><br></code></pre></td></tr></table></figure><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs makefile"><span class="hljs-comment"># Makefile2</span><br>VIR := old_value<br>VIR ?= new_value<br><span class="hljs-comment"># 上面就会等于 old_value</span><br></code></pre></td></tr></table></figure><h3 id="4"><a href="#4" class="headerlink" title="4. +="></a>4. <code>+=</code></h3><table><thead><tr><th>符号</th><th>含义</th></tr></thead><tbody><tr><td>+&#x3D;</td><td>将等号后面的值添加到前面的变量上，中间会插入空格</td></tr></tbody></table><p><strong>例子</strong></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs makefile">varA := a<br>varA += 1<br><span class="hljs-section">debug:</span><br>@echo <span class="hljs-variable">$(varA)</span><br><span class="hljs-comment"># 输出</span><br><span class="hljs-comment"># a a</span><br></code></pre></td></tr></table></figure>]]></content>
     
     
     <categories>
