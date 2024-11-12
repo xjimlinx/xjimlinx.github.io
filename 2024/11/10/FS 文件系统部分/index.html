@@ -1,0 +1,955 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/xein.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Xein">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="FS of NPUcore-LA〇、概览先使用 rtree (我自己用gpt帮助写的用rust实现的tree简化版)看一下大概  可以看到有fs根目录下有三个文件夹，分别是：  dev ：还不知道放什么的代码（2024&#x2F;11&#x2F;10） fat32 ：放有 fat32 相关的代码 ext4（我自己加的）     所以依葫芦画瓢，现在ext4下面创建如下结构，后面再慢慢改  1234">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FS of NPUcore-LA">
+<meta property="og:url" content="http://xjimlinx.github.io/2024/11/10/FS%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%83%A8%E5%88%86/index.html">
+<meta property="og:site_name" content="XeinDeBlog">
+<meta property="og:description" content="FS of NPUcore-LA〇、概览先使用 rtree (我自己用gpt帮助写的用rust实现的tree简化版)看一下大概  可以看到有fs根目录下有三个文件夹，分别是：  dev ：还不知道放什么的代码（2024&#x2F;11&#x2F;10） fat32 ：放有 fat32 相关的代码 ext4（我自己加的）     所以依葫芦画瓢，现在ext4下面创建如下结构，后面再慢慢改  1234">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241110114028818.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241110114314858.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241110114333313.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241111145530465.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241111181040260.png">
+<meta property="article:published_time" content="2024-11-10T03:24:51.000Z">
+<meta property="article:modified_time" content="2024-11-12T18:55:27.000Z">
+<meta property="article:author" content="Xein">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241110114028818.png">
+  
+  
+  
+  <title>FS of NPUcore-LA - XeinDeBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"xjimlinx.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>XeinDeBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="FS of NPUcore-LA"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Xein
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-10 11:24" pubdate>
+          2024-11-10 11:24
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          24 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">FS of NPUcore-LA</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年11月13日 凌晨
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="FS-of-NPUcore-LA"><a href="#FS-of-NPUcore-LA" class="headerlink" title="FS of NPUcore-LA"></a>FS of NPUcore-LA</h1><h2 id="〇、概览"><a href="#〇、概览" class="headerlink" title="〇、概览"></a>〇、概览</h2><p>先使用 <a target="_blank" rel="noopener" href="https://github.com/xjimlinx/rtree">rtree</a> (我自己用gpt帮助写的用rust实现的tree简化版)看一下大概</p>
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241110114028818.png" srcset="/img/loading.gif" lazyload alt="image-20241110114028818"></p>
+<p>可以看到有fs根目录下有三个文件夹，分别是：</p>
+<ul>
+<li><strong>dev</strong> ：还不知道放什么的代码（2024&#x2F;11&#x2F;10）</li>
+<li><strong>fat32</strong> ：放有 fat32 相关的代码</li>
+<li><strong>ext4</strong>（我自己加的）</li>
+</ul>
+<center class="half">
+<img src="/home/xein/.config/Typora/typora-user-images/image-20241110114314858.png" srcset="/img/loading.gif" lazyload><img src="/home/xein/.config/Typora/typora-user-images/image-20241110114333313.png" srcset="/img/loading.gif" lazyload>
+</center>
+所以依葫芦画瓢，现在ext4下面创建如下结构，后面再慢慢改
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust">src/fs/ext4<br>├── bitmap.rs       # 位图操作，用于跟踪已分配/未分配的块<br>├── dir_iter.rs     # 目录迭代器，用于遍历目录项<br>├── inode.rs        # 管理inode数据结构，这是EXT4文件系统中的核心<br>├── layout.rs       # 定义EXT4文件系统在磁盘上的布局<br>├── <span class="hljs-keyword">mod</span>.rs          # 模块入口，负责初始化EXT4文件系统支持<br>└── vfs.rs          # 虚拟文件系统接口，将EXT4特定的实现与VFS层对接<br></code></pre></td></tr></table></figure>
+
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241111145530465.png" srcset="/img/loading.gif" lazyload alt="image-20241111145530465"></p>
+<h2 id="一、FS-根文件"><a href="#一、FS-根文件" class="headerlink" title="一、FS 根文件"></a>一、FS 根文件</h2><p>然后我们现在先从 <code>fs</code> 文件夹下面看看纯文件</p>
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241111181040260.png" srcset="/img/loading.gif" lazyload alt="image-20241111181040260"></p>
+<p>首先，先看看 <code>fs/mod.rs</code> 文件，毕竟是模块声明文件</p>
+<h3 id="1-1-fs-mod-rs"><a href="#1-1-fs-mod-rs" class="headerlink" title="1.1 fs&#x2F;mod.rs"></a>1.1 fs&#x2F;mod.rs</h3><h6 id="FileDescriptor"><a href="#FileDescriptor" class="headerlink" title="FileDescriptor"></a>FileDescriptor</h6><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Clone)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FileDescriptor</span> &#123;<br>    cloexec: <span class="hljs-type">bool</span>,	<span class="hljs-comment">// close on exec</span><br>    nonblock: <span class="hljs-type">bool</span>,<br>    <span class="hljs-keyword">pub</span> file: Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>cloexec</code>: 表示这个文件描述符是否应该在执行新的程序（比如通过<code>exec</code>系列函数）时关闭。</li>
+<li><code>nonblock</code>: 表示文件描述符是否设置为非阻塞模式。</li>
+<li><code>file</code>: 这是一个实现了<code>File</code> trait的对象的引用计数指针（<code>Arc&lt;dyn File&gt;</code>），这意味着它可以指向任何实现了<code>File</code> trait的具体文件类型。</li>
+</ul>
+<h6 id="FdTable"><a href="#FdTable" class="headerlink" title="FdTable"></a>FdTable</h6><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[derive(Clone)]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FdTable</span> &#123;<br>    inner: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">Option</span>&lt;FileDescriptor&gt;&gt;,<br>    recycled: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">u8</span>&gt;,<br>    soft_limit: <span class="hljs-type">usize</span>,<br>    hard_limit: <span class="hljs-type">usize</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>inner</code>: 一个可选的<code>FileDescriptor</code>类型的向量，每个元素代表一个文件描述符，使用<code>Option</code>来允许文件描述符被标记为未使用。</li>
+<li><code>recycled</code>: 一个<code>u8</code>类型的向量，可能是用来追踪哪些文件描述符编号已经被回收并且可以重新分配。</li>
+<li><code>soft_limit</code> 和 <code>hard_limit</code>: 这些可能是指文件描述符的数量限制，软限制是可以修改的限制，而硬限制则是最大上限。</li>
+</ul>
+<p>剩下的就是这两个东西的实现了，先暂时不在这里展开</p>
+<h3 id="1-2-fs-file-trait-rs"><a href="#1-2-fs-file-trait-rs" class="headerlink" title="1.2 fs&#x2F;file_trait.rs"></a>1.2 fs&#x2F;file_trait.rs</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">use</span> super::fat32::DiskInodeType;<br><span class="hljs-keyword">use</span> crate::&#123;mm::UserBuffer, syscall::errno::ENOTTY&#125;;<br><span class="hljs-keyword">use</span> __alloc::string::<span class="hljs-type">String</span>;<br><span class="hljs-keyword">use</span> alloc::&#123;<br>    sync::&#123;Arc, Weak&#125;,<br>    vec::<span class="hljs-type">Vec</span>,<br>&#125;;<br><span class="hljs-keyword">use</span> downcast_rs::*;<br><span class="hljs-keyword">use</span> spin::Mutex;<br><br><span class="hljs-keyword">use</span> super::&#123;cache::PageCache, directory_tree::DirectoryTreeNode, layout::*&#125;;<br><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">File</span>: DowncastSync &#123;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">deep_clone</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">readable</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">writable</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">read</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">usize</span>&gt;, buf: &amp;<span class="hljs-keyword">mut</span> [<span class="hljs-type">u8</span>]) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">write</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">usize</span>&gt;, buf: &amp;[<span class="hljs-type">u8</span>]) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">r_ready</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">w_ready</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">read_user</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;<span class="hljs-type">usize</span>&gt;, buf: UserBuffer) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">write_user</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;<span class="hljs-type">usize</span>&gt;, buf: UserBuffer) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_size</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_stat</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> Stat;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_file_type</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> DiskInodeType;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">is_dir</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>        <span class="hljs-keyword">self</span>.<span class="hljs-title function_ invoke__">get_file_type</span>() == DiskInodeType::Directory<br>    &#125;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">is_file</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>        <span class="hljs-keyword">self</span>.<span class="hljs-title function_ invoke__">get_file_type</span>() == DiskInodeType::File<br>    &#125;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">info_dirtree_node</span>(&amp;<span class="hljs-keyword">self</span>, dirnode_ptr: Weak&lt;DirectoryTreeNode&gt;);<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_dirtree_node</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Option</span>&lt;Arc&lt;DirectoryTreeNode&gt;&gt;;<br>    <span class="hljs-comment">/// open</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">open</span>(&amp;<span class="hljs-keyword">self</span>, flags: OpenFlags, special_use: <span class="hljs-type">bool</span>) <span class="hljs-punctuation">-&gt;</span> Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">open_subfile</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;<span class="hljs-type">Vec</span>&lt;(<span class="hljs-type">String</span>, Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;)&gt;, <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-comment">/// create</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">create</span>(&amp;<span class="hljs-keyword">self</span>, name: &amp;<span class="hljs-type">str</span>, file_type: DiskInodeType) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;, <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">link_child</span>(&amp;<span class="hljs-keyword">self</span>, name: &amp;<span class="hljs-type">str</span>, child: &amp;<span class="hljs-keyword">Self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), <span class="hljs-type">isize</span>&gt;<br>    <span class="hljs-keyword">where</span><br>        <span class="hljs-keyword">Self</span>: <span class="hljs-built_in">Sized</span>;<br>    <span class="hljs-comment">/// delete(unlink)</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">unlink</span>(&amp;<span class="hljs-keyword">self</span>, delete: <span class="hljs-type">bool</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-comment">/// dirent</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_dirent</span>(&amp;<span class="hljs-keyword">self</span>, count: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Vec</span>&lt;Dirent&gt;;<br>    <span class="hljs-comment">/// offset</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_offset</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span> &#123;<br>        <span class="hljs-keyword">self</span>.<span class="hljs-title function_ invoke__">lseek</span>(<span class="hljs-number">0</span>, SeekWhence::SEEK_CUR).<span class="hljs-title function_ invoke__">unwrap</span>()<br>    &#125;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">lseek</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">isize</span>, whence: SeekWhence) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;<span class="hljs-type">usize</span>, <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-comment">/// size</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">modify_size</span>(&amp;<span class="hljs-keyword">self</span>, diff: <span class="hljs-type">isize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">truncate_size</span>(&amp;<span class="hljs-keyword">self</span>, new_size: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), <span class="hljs-type">isize</span>&gt;;<br>    <span class="hljs-comment">// time</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">set_timestamp</span>(&amp;<span class="hljs-keyword">self</span>, ctime: <span class="hljs-type">Option</span>&lt;<span class="hljs-type">usize</span>&gt;, atime: <span class="hljs-type">Option</span>&lt;<span class="hljs-type">usize</span>&gt;, mtime: <span class="hljs-type">Option</span>&lt;<span class="hljs-type">usize</span>&gt;);<br>    <span class="hljs-comment">/// cache</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_single_cache</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;Arc&lt;Mutex&lt;PageCache&gt;&gt;, ()&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_all_caches</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;<span class="hljs-type">Vec</span>&lt;Arc&lt;Mutex&lt;PageCache&gt;&gt;&gt;, ()&gt;;<br>    <span class="hljs-comment">/// memory related</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">oom</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span>;<br>    <span class="hljs-comment">/// poll, select related</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">hang_up</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span>;<br>    <span class="hljs-comment">/// iotcl</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">ioctl</span>(&amp;<span class="hljs-keyword">self</span>, _cmd: <span class="hljs-type">u32</span>, _argp: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span> &#123;<br>        ENOTTY<br>    &#125;<br>    <span class="hljs-comment">/// fcntl</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">fcntl</span>(&amp;<span class="hljs-keyword">self</span>, cmd: <span class="hljs-type">u32</span>, arg: <span class="hljs-type">u32</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span>;<br>&#125;<br>impl_downcast!(sync File);<br></code></pre></td></tr></table></figure>
+
+<p>看一眼给我看红温了，这段放到后面让ai全解释一下，先留个TODO：在这里</p>
+<h6 id="⚠️TODO："><a href="#⚠️TODO：" class="headerlink" title="⚠️TODO："></a>⚠️TODO：</h6><h3 id="1-3-fs-filesystem-rs"><a href="#1-3-fs-filesystem-rs" class="headerlink" title="1.3 fs&#x2F;filesystem.rs"></a>1.3 fs&#x2F;filesystem.rs</h3><h4 id="1-3-1-lazy-static-段"><a href="#1-3-1-lazy-static-段" class="headerlink" title="1.3.1 lazy_static! 段"></a>1.3.1 lazy_static! 段</h4><p>一段不知所云的 <code>lazy_static！</code> 代码</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust">lazy_static! &#123;<br>	<span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> FS_ID_COUNTER: Arc&lt;Mutex&lt;<span class="hljs-type">usize</span>&gt;&gt; = Arc::<span class="hljs-title function_ invoke__">new</span>(Mutex::<span class="hljs-title function_ invoke__">new</span>(<span class="hljs-number">0</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这段代码创建了一个全局的、线程安全的 <code>FS_ID_COUNTER</code> 变量，初始化为0。这个计数器被 <code>Arc</code> 包裹，以便在多个线程间共享，并且通过 <code>Mutex</code> 确保在任何时刻，只有一个线程能够访问或修改计数器的值。</p>
+<ul>
+<li><p><code>static ref</code> 是 <code>lazy_static!</code> 宏的关键字（由lazy_static!提供），表示声明一个静态的、可变的引用。这个变量会在程序运行时被初始化并且保持全局唯一，直到程序退出。</p>
+<ul>
+<li><p><code>FS_ID_COUNTER</code> 是变量的名字，可以被其他代码访问。</p>
+</li>
+<li><p>由于是静态变量，Rust 会确保在整个程序生命周期内只有一个 <code>FS_ID_COUNTER</code> 实例存在，并且它在多线程环境下是安全的。</p>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><code>Arc&lt;Mutex&lt;usize&gt;&gt;</code> 是 <code>FS_ID_COUNTER</code> 的类型，下面是它的具体含义：<ul>
+<li><strong>Mutex</strong>：<code>Mutex</code> 是一种互斥锁，用于保证数据在多线程环境中的安全访问。只有一个线程可以访问被 <code>Mutex</code> 包裹的数据，其他线程必须等待直到该线程释放锁。</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-3-2-FS-枚举"><a href="#1-3-2-FS-枚举" class="headerlink" title="1.3.2 FS 枚举"></a>1.3.2 FS 枚举</h4><p>枚举类型 FS，包含文件系统类型</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">FS</span> &#123;<br>    NULL,<br>    Fat32,<br>    Ext4,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到这里有</p>
+<ul>
+<li>NULL：应该是找不到类型的时候用的</li>
+<li>Fat32：已经实现好的文件系统支持</li>
+</ul>
+<h4 id="1-3-3-FileSystem-结构体"><a href="#1-3-3-FileSystem-结构体" class="headerlink" title="1.3.3 FileSystem 结构体"></a>1.3.3 FileSystem 结构体</h4><p><code>FileSystem</code> 数据结构</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FileSystem</span>&#123;<br>    <span class="hljs-keyword">pub</span> fs_id: <span class="hljs-type">usize</span>,<br>    <span class="hljs-keyword">pub</span> fs_type: FS,	<span class="hljs-comment">// 即上面的枚举类型</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>剩下的就是FileSystem的方法，只有一个new方法（关联函数）</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span> <span class="hljs-title class_">FileSystem</span> &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">new</span>(fs_type: FS) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-keyword">Self</span> &#123;<br>        FS_ID_COUNTER.<span class="hljs-title function_ invoke__">lock</span>().<span class="hljs-title function_ invoke__">add_assign</span>(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">fs_id</span> = *FS_ID_COUNTER.<span class="hljs-title function_ invoke__">lock</span>();<br>        <span class="hljs-keyword">Self</span> &#123; fs_id, fs_type &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到，<code>FS_ID_COUNTER</code> 先上锁然后加 <code>1</code></p>
+<p>然后将加 <code>1</code> 后的值给 <code>fs_id</code></p>
+<h3 id="1-4-fs-directory-tree-rs"><a href="#1-4-fs-directory-tree-rs" class="headerlink" title="1.4 fs&#x2F;directory_tree.rs"></a>1.4 fs&#x2F;directory_tree.rs</h3><h4 id="1-4-1-lazy-static-段"><a href="#1-4-1-lazy-static-段" class="headerlink" title="1.4.1 lazy_static! 段"></a>1.4.1 lazy_static! 段</h4><p>首先是一坨 <code>lazy_static</code>! 代码</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs rust">lazy_static! &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> FILE_SYSTEM: Arc&lt;EasyFileSystem&gt; = EasyFileSystem::<span class="hljs-title function_ invoke__">open</span>(<br>        BLOCK_DEVICE.<span class="hljs-title function_ invoke__">clone</span>(),<br>        Arc::<span class="hljs-title function_ invoke__">new</span>(Mutex::<span class="hljs-title function_ invoke__">new</span>(BlockCacheManager::<span class="hljs-title function_ invoke__">new</span>()))<br>    );<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> ROOT: Arc&lt;DirectoryTreeNode&gt; = &#123;<br>        <span class="hljs-keyword">let</span> <span class="hljs-variable">inode</span> = DirectoryTreeNode::<span class="hljs-title function_ invoke__">new</span>(<br>            <span class="hljs-string">&quot;&quot;</span>.<span class="hljs-title function_ invoke__">to_string</span>(),<br>            Arc::<span class="hljs-title function_ invoke__">new</span>(FileSystem::<span class="hljs-title function_ invoke__">new</span>(FS::Fat32)),<br>            OSInode::<span class="hljs-title function_ invoke__">new</span>(InodeImpl::<span class="hljs-title function_ invoke__">root_inode</span>(&amp;FILE_SYSTEM)),<br>            Weak::<span class="hljs-title function_ invoke__">new</span>(),<br>        );<br>        inode.<span class="hljs-title function_ invoke__">add_special_use</span>();<br>        inode<br>    &#125;;<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> DIRECTORY_VEC: Mutex&lt;(<span class="hljs-type">Vec</span>&lt;Weak&lt;DirectoryTreeNode&gt;&gt;, <span class="hljs-type">usize</span>)&gt; =<br>        Mutex::<span class="hljs-title function_ invoke__">new</span>((<span class="hljs-type">Vec</span>::<span class="hljs-title function_ invoke__">new</span>(), <span class="hljs-number">0</span>));<br>    <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> PATH_CACHE: Mutex&lt;(<span class="hljs-type">String</span>, Weak&lt;DirectoryTreeNode&gt;)&gt; =<br>        Mutex::<span class="hljs-title function_ invoke__">new</span>((<span class="hljs-string">&quot;&quot;</span>.<span class="hljs-title function_ invoke__">to_string</span>(), Weak::<span class="hljs-title function_ invoke__">new</span>()));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到包含四个变量，全部都是 <code>pub static ref</code> ，所以只能放在 <code>lazy_static!</code> 宏中</p>
+<ul>
+<li>FILE_SYSTEM：</li>
+<li>ROOT：</li>
+<li>DIRECTORY_VEC：</li>
+<li>PATH_CACHE：</li>
+</ul>
+<p>然后是三个关于 <code>directory_vec</code> 的方法</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">insert_directory_vec</span>(inode: Weak&lt;DirectoryTreeNode&gt;) &#123;...&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">delete_directory_vec</span>() &#123;...&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">update_directory_vec</span>(lock: &amp;<span class="hljs-keyword">mut</span> MutexGuard&lt;(<span class="hljs-type">Vec</span>&lt;Weak&lt;DirectoryTreeNode&gt;&gt;, <span class="hljs-type">usize</span>)&gt;) &#123;...&#125;<br></code></pre></td></tr></table></figure>
+
+<p>即增、删、改</p>
+<ul>
+<li>insert：</li>
+<li>delete：</li>
+<li>update：</li>
+</ul>
+<p>接着是 <code>init_fs</code> 初始化文件系统函数</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">init_fs</span>() &#123;<br>    <span class="hljs-title function_ invoke__">init_device_directory</span>();<br>    <span class="hljs-title function_ invoke__">init_tmp_directory</span>();<br>    <span class="hljs-title function_ invoke__">init_proc_directory</span>();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到包含了三个初始化函数：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">init_device_directory</span>() &#123;...&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">init_tmp_directory</span>() &#123;...&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">init_proc_directory</span>() &#123;...&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="1-5-fs-poll-rs"><a href="#1-5-fs-poll-rs" class="headerlink" title="1.5 fs&#x2F;poll.rs"></a>1.5 fs&#x2F;poll.rs</h3><h3 id="1-6-fs-layout-rs"><a href="#1-6-fs-layout-rs" class="headerlink" title="1.6 fs&#x2F;layout.rs"></a>1.6 fs&#x2F;layout.rs</h3><h4 id="1-6-1-bitflags-段"><a href="#1-6-1-bitflags-段" class="headerlink" title="1.6.1 bitflags! 段"></a>1.6.1 bitflags! 段</h4><p>首先是三大段 <code>bitflags!</code> 宏，全部都是常量，用于设置对应标志位</p>
+<ul>
+<li><p>OpenFlags——O_xxx：</p>
+<ul>
+<li>O_RDONLY</li>
+<li>O_WRONLY</li>
+<li>O_RDWR</li>
+<li>O_CREAT</li>
+<li>O_EXCL</li>
+<li>O_NOCTTY</li>
+<li>O_TRUNC</li>
+<li>O_APPEND</li>
+<li>O_NONBLOCK</li>
+<li>O_DSYNC</li>
+<li>O_SYNC</li>
+<li>O_RSYNC</li>
+<li>O_DIRECTORY</li>
+<li>O_NOFOLLOW</li>
+<li>O_CLOEXEC</li>
+<li>O_ASYNC</li>
+<li>O_DIRECT</li>
+<li>O_LARGEFILE</li>
+<li>O_NOATIME</li>
+<li>O_PATH</li>
+<li>O_TMPFILE</li>
+</ul>
+</li>
+<li><p>SeekWhence——SEEK_xxx：</p>
+<ul>
+<li>SEEK_SET</li>
+<li>SEEK_CUR</li>
+<li>SEEK_END</li>
+</ul>
+</li>
+<li><p>StatMode——S_xxx：</p>
+<ul>
+<li><p>S_IFMT</p>
+</li>
+<li><p>S_IFSOCK</p>
+</li>
+<li><p>S_IFLINK</p>
+</li>
+<li><p>S_IFREG</p>
+</li>
+<li><p>S_IFBLK</p>
+</li>
+<li><p>S_IFDIR</p>
+</li>
+<li><p>S_IFCHR</p>
+</li>
+<li><p>S_IFIFO</p>
+</li>
+<li><p>S_ISUID</p>
+</li>
+<li><p>S_ISGID</p>
+</li>
+<li><p>S_ISVTX</p>
+</li>
+<li><p>S_IRWXU</p>
+</li>
+<li><p>S_IRUSR</p>
+</li>
+<li><p>S_IWUSR</p>
+</li>
+<li><p>S_IXUSR</p>
+</li>
+<li><p>S_IRWXG</p>
+</li>
+<li><p>S_IRGRP</p>
+</li>
+<li><p>S_IWGRP</p>
+</li>
+<li><p>S_IXGRP</p>
+</li>
+<li><p>S_IRWXO</p>
+</li>
+<li><p>S_IROTH</p>
+</li>
+<li><p>S_IWOTH</p>
+</li>
+<li><p>S_IXOTH</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-6-2-常量"><a href="#1-6-2-常量" class="headerlink" title="1.6.2 常量"></a>1.6.2 常量</h4><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">const</span> NAME_LIMIT: <span class="hljs-type">usize</span> = <span class="hljs-number">128</span>;<br></code></pre></td></tr></table></figure>
+
+<p>即下面的 <code>Dirent</code>（<code>Directory Entry</code>）的 <code>d_name</code> 字段的限定大小值</p>
+<h4 id="1-6-3-Stat-结构体"><a href="#1-6-3-Stat-结构体" class="headerlink" title="1.6.3 Stat 结构体"></a>1.6.3 Stat 结构体</h4><p>然后是 <code>Stat</code> 结构体（派生了<code>Clone, Copy, Debug</code> 的 <code>Trait</code>）</p>
+<p>该结构体灰常重要（实际上是因为非常好理解），保存了文件的状态（从支持的文件，不支持的文件我暂时不知道会咋样）</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Stat</span> &#123;<br>    <span class="hljs-comment">/// ID of device containing file</span><br>    st_dev: <span class="hljs-type">u64</span>,<br>    <span class="hljs-comment">/// Inode number</span><br>    st_ino: <span class="hljs-type">u64</span>,<br>    <span class="hljs-comment">/// File type and mode   </span><br>    st_mode: <span class="hljs-type">u32</span>,<br>    <span class="hljs-comment">/// Number of hard links</span><br>    st_nlink: <span class="hljs-type">u32</span>,<br>    <span class="hljs-comment">/// User ID of the file&#x27;s owner.</span><br>    st_uid: <span class="hljs-type">u32</span>,<br>    <span class="hljs-comment">/// Group ID of the file&#x27;s group.</span><br>    st_gid: <span class="hljs-type">u32</span>,<br>    <span class="hljs-comment">/// Device ID (if special file)</span><br>    st_rdev: <span class="hljs-type">u64</span>,<br>    __pad: <span class="hljs-type">u64</span>,<br>    <span class="hljs-comment">/// Size of file, in bytes.</span><br>    st_size: <span class="hljs-type">i64</span>,<br>    <span class="hljs-comment">/// Optimal block size for I/O.</span><br>    st_blksize: <span class="hljs-type">u32</span>,<br>    __pad2: <span class="hljs-type">i32</span>,<br>    <span class="hljs-comment">/// Number 512(2048?)-byte blocks allocated.</span><br>    st_blocks: <span class="hljs-type">u64</span>,<br>    <span class="hljs-comment">/// Backward compatibility. Used for time of last access.</span><br>    st_atime: TimeSpec,<br>    <span class="hljs-comment">/// Time of last modification.</span><br>    st_mtime: TimeSpec,<br>    <span class="hljs-comment">/// Time of last status change.</span><br>    st_ctime: TimeSpec,<br>    __unused: <span class="hljs-type">u64</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接着是 <code>Stat</code> 的方法实现</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span> <span class="hljs-title class_">Stat</span> &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_ino</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span> &#123;...&#125;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_size</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span> &#123;...&#125;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">new</span>(...) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-keyword">Self</span>&#123;...&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>get_ino：获取 <code>st_ino</code> ，即 <code>inode number</code></p>
+</li>
+<li><p>get_size：获取 <code>st_size</code>，即文件大小</p>
+</li>
+<li><p>new：关联函数，创建一个新的 <code>Stat</code> ，</p>
+<ul>
+<li><p><code>st_uid</code>：初始化为 <code>0</code></p>
+</li>
+<li><p><code>st_gid</code>：初始化为 <code>0</code></p>
+</li>
+<li><p><code>st_blksize</code>：BLK_SIZE，与BLOCK_SZ 相同，后者在 <code>os/src/arch/la64/board/2k500.rs</code> 内定义，大小为 <code>2048</code></p>
+</li>
+<li><p><code>st_blocks</code>：<code>(st_size 文件大小 + BLK_SIZE 块大小 - 1)/BLK_SIZE</code>  这个表达式确保至少 <code>st_blocks</code> 大小为 <code>1</code> 。</p>
+<p><code>st_size</code> 的大小总为 <code>n * BLK_SIZE + remainder</code> ，那么经过这个式子转化后，当 <code>remainder</code> 为 <code>0</code> ， <code>st_blocks == n</code> </p>
+<p>当 <code>remainder</code> 为 <code>1</code> ，<code>st_blocks == n + 1</code></p>
+<p>这保证了最小块对齐。</p>
+</li>
+<li><p><code>__xxx</code>：全部初始化为 <code>0</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="1-6-4-Dirent-结构体-为啥不命名为DirEnt？"><a href="#1-6-4-Dirent-结构体-为啥不命名为DirEnt？" class="headerlink" title="1.6.4 Dirent 结构体 (为啥不命名为DirEnt？)"></a>1.6.4 Dirent 结构体 (为啥不命名为DirEnt？)</h4><p>即 <code>Directory Entry</code> ，看注释意思是原生Linux 目录项结构</p>
+<p>理论上 <code>d_name</code> 字段并不是定长的，可以任意长，但是代码中将该字段设置为定长大小</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Dirent</span> &#123;<br>    <span class="hljs-comment">/// Inode number</span><br>    <span class="hljs-keyword">pub</span> d_ino: <span class="hljs-type">usize</span>,<br>    <span class="hljs-comment">/// Offset to next &#x27;linux_directory_entry&#x27;</span><br>    <span class="hljs-keyword">pub</span> d_off: <span class="hljs-type">isize</span>,<br>    <span class="hljs-comment">/// Length of current &#x27;linux_directory_entry&#x27;</span><br>    <span class="hljs-keyword">pub</span> d_reclen: <span class="hljs-type">u16</span>,<br>    <span class="hljs-comment">/// Type of this file</span><br>    <span class="hljs-keyword">pub</span> d_type: <span class="hljs-type">u8</span>,<br>    <span class="hljs-comment">/// Fix-sized d_name array</span><br>    <span class="hljs-keyword">pub</span> d_name: [<span class="hljs-type">u8</span>; NAME_LIMIT],<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后是 <code>Dirent</code> 的实现</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">impl</span> <span class="hljs-title class_">Dirent</span> &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">new</span>(...) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-title function_ invoke__">Self</span>(...)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中 <code>d_name</code> 大小初始化为 <code>0</code> ，然后使用 <code>copy_from_slice</code> 从关联函数 <code>new</code> 中给的参数复制。</p>
+<p>好了没了</p>
+<h3 id="1-7-fs-swap-rs"><a href="#1-7-fs-swap-rs" class="headerlink" title="1.7 fs&#x2F;swap.rs"></a>1.7 fs&#x2F;swap.rs</h3><h4 id="1-7-1-lazy-static"><a href="#1-7-1-lazy-static" class="headerlink" title="1.7.1 lazy_static!"></a>1.7.1 lazy_static!</h4><p>首先是一坨 <code>lazy_static!</code> </p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust">lazy_static! &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> SWAP_DEVICE: Mutex&lt;Swap&gt; = Mutex::<span class="hljs-title function_ invoke__">new</span>(Swap::<span class="hljs-title function_ invoke__">new</span>(<span class="hljs-number">16</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到定义了一个 <code>pub static ref</code> ，类型为 <code>Mutex&lt;Swap&gt;</code>，初始值为16</p>
+<h5 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h5><blockquote>
+<p>都为 <code>usize</code> 类型</p>
+</blockquote>
+<ul>
+<li>BLK_PER_PG：<code>PAGE_SIZE / BLOCK_SZ;</code></li>
+<li>SWAP_SIZE：<code>1024 * 1024;</code></li>
+</ul>
+<h4 id="SwapTracker"><a href="#SwapTracker" class="headerlink" title="SwapTracker"></a>SwapTracker</h4><h4 id="Swap"><a href="#Swap" class="headerlink" title="Swap"></a>Swap</h4><p><code>Swap</code> 定义在下方</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Swap</span> &#123;<br>    bitmap: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">u64</span>&gt;,<br>    block_ids: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">usize</span>&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Swap内部有两个字段</p>
+<ul>
+<li>bitmap</li>
+<li>block_ids</li>
+</ul>
+<p>Swap 有 <code>3</code> 个关联函数：</p>
+<ul>
+<li>new 创建一个新的Swap变量</li>
+<li>read_page</li>
+<li>write_page</li>
+</ul>
+<p>有 <code>7</code> 个方法：</p>
+<ul>
+<li>set_bit</li>
+<li>clear_bit</li>
+<li>alloc_page</li>
+<li>get_block_ids</li>
+<li>read</li>
+<li>write</li>
+<li>discard</li>
+</ul>
+<h3 id="1-8-fs-cache-rs"><a href="#1-8-fs-cache-rs" class="headerlink" title="1.8 fs&#x2F;cache.rs"></a>1.8 fs&#x2F;cache.rs</h3><h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><blockquote>
+<p>是什么</p>
+<p>为什么</p>
+<p>怎么做</p>
+</blockquote>
+<h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><h4 id="ref-与-的区别"><a href="#ref-与-的区别" class="headerlink" title="ref 与 &amp; 的区别"></a>ref 与 &amp; 的区别</h4><p><strong><code>&amp;</code></strong> 是用来创建引用的操作符，它在表达式中用于借用（不可变或可变）某个值。</p>
+<p><strong><code>ref</code></strong> 用于在模式匹配中解构时创建引用。它不会像 <code>&amp;</code> 那样直接在表达式中借用一个值，而是在解构的过程中通过 <code>ref</code> 获取对值的引用。</p>
+<h3 id="宏"><a href="#宏" class="headerlink" title="宏"></a>宏</h3><h4 id="1-lazy-static-宏"><a href="#1-lazy-static-宏" class="headerlink" title="1. lazy_static! 宏"></a>1. lazy_static! 宏</h4><p><code>lazy_static!</code> 是 Rust 的一个宏，它用于声明一个静态变量，并且支持延迟初始化。普通的静态变量必须在编译时就已知其值，而 <code>lazy_static!</code> 允许我们在运行时初始化静态变量，只会在第一次访问时进行初始化。</p>
+<p>形如 <code>static ref</code> 的用法只能在 <code>lazy_static!</code> 宏中使用。</p>
+<p>应用场景：</p>
+<h4 id="2-bitflags-宏"><a href="#2-bitflags-宏" class="headerlink" title="2. bitflags! 宏"></a>2. bitflags! 宏</h4><h5 id="bitflags-是什么"><a href="#bitflags-是什么" class="headerlink" title="bitflags! 是什么?"></a>bitflags! 是什么?</h5><p><code>bitflags!</code> 宏是 Rust 中用于简化位标志（bit flags）操作的一个宏，属于 <code>bitflags</code> crate 中的功能。位标志通常用于表示多个布尔状态，它通过位运算（如 AND、OR、NOT 等）将多个布尔值合并到一个整数类型的值中。这样做能够节省内存，并提高性能，特别是在需要存储多个状态时。</p>
+<h5 id="为什么需要-bitflags-？"><a href="#为什么需要-bitflags-？" class="headerlink" title="为什么需要 bitflags! ？"></a>为什么需要 <code>bitflags!</code> ？</h5><p>在 Rust 中，位标志常常用于表示一组互斥或可组合的状态，例如：</p>
+<ul>
+<li>权限控制（读、写、执行等）</li>
+<li>游戏中的多个开关（如：飞行、无敌、速度提升等）</li>
+<li>系统标志（如：文件的打开模式、网络协议标志等）</li>
+</ul>
+<p>如果手动实现这些位标志的管理，代码会变得比较繁琐，因为需要手动定义每个位的值，并处理位运算。<code>bitflags!</code> 宏简化了这个过程，它通过提供一种更直观的方式来定义和操作位标志。</p>
+<h5 id="如何使用-bitflags-？"><a href="#如何使用-bitflags-？" class="headerlink" title="如何使用 bitflags! ？"></a>如何使用 <code>bitflags!</code> ？</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">use</span> bitflags::bitflags;<br><br><span class="hljs-built_in">bitflags!</span> &#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Permissions</span>: <span class="hljs-type">u32</span> &#123;<br>        <span class="hljs-keyword">const</span> READ = <span class="hljs-number">0b00000001</span>;  <span class="hljs-comment">// 第1位，表示可读</span><br>        <span class="hljs-keyword">const</span> WRITE = <span class="hljs-number">0b00000010</span>; <span class="hljs-comment">// 第2位，表示可写</span><br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">perms</span> = Permissions::<span class="hljs-title function_ invoke__">empty</span>(); <span class="hljs-comment">// 初始时没有任何权限</span><br><br>    <span class="hljs-comment">// 设置可读权限</span><br>    perms.<span class="hljs-title function_ invoke__">insert</span>(Permissions::READ);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Has READ permission: &#123;&#125;&quot;</span>, perms.<span class="hljs-title function_ invoke__">contains</span>(Permissions::READ)); <span class="hljs-comment">// true</span><br>    <br>    <span class="hljs-comment">// 设置可写权限</span><br>    perms.<span class="hljs-title function_ invoke__">insert</span>(Permissions::WRITE);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Has WRITE permission: &#123;&#125;&quot;</span>, perms.<span class="hljs-title function_ invoke__">contains</span>(Permissions::WRITE)); <span class="hljs-comment">// true</span><br>    <br>    <span class="hljs-comment">// 更改权限，移除可读权限，保持可写权限</span><br>    perms.<span class="hljs-title function_ invoke__">remove</span>(Permissions::READ);<br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Has READ permission: &#123;&#125;&quot;</span>, perms.<span class="hljs-title function_ invoke__">contains</span>(Permissions::READ)); <span class="hljs-comment">// false</span><br>    <span class="hljs-built_in">println!</span>(<span class="hljs-string">&quot;Has WRITE permission: &#123;&#125;&quot;</span>, perms.<span class="hljs-title function_ invoke__">contains</span>(Permissions::WRITE)); <span class="hljs-comment">// true</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>remove</code> 相当于对对应位置零。</p>
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><h4 id="1-Arc（Atomic-Reference-Counting）"><a href="#1-Arc（Atomic-Reference-Counting）" class="headerlink" title="1. Arc（Atomic Reference Counting）"></a>1. Arc（Atomic Reference Counting）</h4><p><code>Arc</code> 是一个线程安全的引用计数智能指针，允许多个线程共享对同一对象的所有权。当没有任何线程持有 <code>Arc</code> 时，资源会被自动释放。<code>Arc</code> 是为了在多线程环境中共享数据而设计的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/" class="category-chain-item">NPUcore</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>FS of NPUcore-LA</div>
+      <div>http://xjimlinx.github.io/2024/11/10/FS 文件系统部分/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Xein</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月10日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/13/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20%E7%AC%94%E8%AE%B0/" title="">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile"></span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/05/Makefile%20%E5%B0%8F%E8%AE%B0/" title="Makefile 小记">
+                        <span class="hidden-mobile">Makefile 小记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
