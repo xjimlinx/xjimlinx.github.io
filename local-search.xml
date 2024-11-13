@@ -4,6 +4,60 @@
   
   
   <entry>
+    <title>KDE使用技巧</title>
+    <link href="/2024/11/13/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    <url>/2024/11/13/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
+    
+    <content type="html"><![CDATA[<h1 id="KDE使用技巧"><a href="#KDE使用技巧" class="headerlink" title="KDE使用技巧"></a>KDE使用技巧</h1><h2 id="桌面"><a href="#桌面" class="headerlink" title="桌面"></a>桌面</h2><h3 id="虚拟桌面"><a href="#虚拟桌面" class="headerlink" title="虚拟桌面"></a>虚拟桌面</h3><p>在设置中可以添加虚拟桌面，然后有如下快捷键：</p><ul><li><code>Ctrl+Fx</code>：<code>Fx</code> 即键盘最上方的一排功能键， <code>x</code> 代表数字，即要切换到第几个虚拟桌面。</li><li><code>三指滑动</code>：同样的，使用笔记本触摸板时，<strong>三指滑动</strong>到上下左右四个方向可以切换到对应位置的<strong>虚拟桌面</strong>。</li></ul><h2 id="Terminal"><a href="#Terminal" class="headerlink" title="Terminal"></a>Terminal</h2><h3 id="Konsole-Yakuake"><a href="#Konsole-Yakuake" class="headerlink" title="Konsole&#x2F;Yakuake"></a>Konsole&#x2F;Yakuake</h3><p><strong>Konsole</strong>：KDE官方软件仓库的终端软件。</p><p><img src="/home/xein/CODE/WEBCODE/xeindeblog/source/img/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/Konsole1.png" alt="image-20241113155907564"></p><p><strong>Yakuake</strong>：KDE官方仓库的基于 <strong>Konsole</strong> 的下拉终端窗口软件。</p><p><img src="/home/xein/.config/Typora/typora-user-images/image-20241113155734453.png" alt="image-20241113155734453"></p><blockquote><p>此处仅介绍Arch下的安装方式</p></blockquote><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> pacman -S yakuake konsole<br></code></pre></td></tr></table></figure><p>安装这两个软件</p><p>打开 <strong>yakuake</strong> 后会默认使用快捷键 <code>F12</code>呼出</p><p>然后可以取消勾选下拉窗口右下角三个点里面的 <strong>窗口失去焦点时保持展开</strong>。这样切换到别的窗口时就会自动收回下拉窗口。</p><p><img src="/home/xein/.config/Typora/typora-user-images/image-20241113160004511.png" alt="image-20241113160004511"></p><p>这两个软件有许多快捷键是一样的：</p><ul><li><code>Ctrl+Shift+T</code>：在当前窗口中新建一个标签页</li><li><code>Alt+n</code>：<code>n</code> 为数字，表示要切换到哪个标签页</li></ul>]]></content>
+    
+    
+    <categories>
+      
+      <category>Linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>技巧</tag>
+      
+      <tag>KDE</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>KDE美化指南</title>
+    <link href="/2024/11/13/KDE%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/"/>
+    <url>/2024/11/13/KDE%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/</url>
+    
+    <content type="html"><![CDATA[<h1 id="KDE美化指南"><a href="#KDE美化指南" class="headerlink" title="KDE美化指南"></a>KDE美化指南</h1>]]></content>
+    
+    
+    <categories>
+      
+      <category>Linux</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>KDE</tag>
+      
+      <tag>美化</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Hexo 折腾笔记</title>
     <link href="/2024/11/13/hexo%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/"/>
     <url>/2024/11/13/hexo%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/</url>
