@@ -13,6 +13,8 @@
     
     <categories>
       
+      <category>操作系统</category>
+      
       <category>Linux</category>
       
       <category>KDE</category>
@@ -41,6 +43,8 @@
     
     
     <categories>
+      
+      <category>操作系统</category>
       
       <category>Linux</category>
       
@@ -171,9 +175,9 @@
     
     <tags>
       
-      <tag>基础</tag>
-      
       <tag>OS</tag>
+      
+      <tag>基础</tag>
       
       <tag>笔记</tag>
       
