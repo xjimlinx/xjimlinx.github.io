@@ -19,18 +19,18 @@
   <meta name="author" content="Xein">
   <meta name="keywords" content="">
   
-    <meta name="description" content="FS 文件系统部分 内容来源于阅读 NPUcore 操作系统内核构建实践书籍的笔记。 当一段内容不够熟或比较不理解或者还没办法完全记忆下来时，可能会原封不动摘录。  写在〇之前因为操作系统是一个工程性的问题，要实现同一个功能可能有（也应当有）许多种不同的方法，这些方法可能大同小异，也可能相距甚远。在笔者目前学习操作系统设计所面临的最大的问题，就是要记忆一大堆管理逻辑。这些管理逻辑或许有其他的平替，">
+    <meta name="description" content="NPUcore 操作系统内核构建读书笔记——FS部分">
 <meta property="og:type" content="article">
 <meta property="og:title" content="FS 文件系统部分">
 <meta property="og:url" content="http://xjimlinx.github.io/2024/11/14/FS%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%83%A8%E5%88%86/index.html">
 <meta property="og:site_name" content="XeinDeBlog">
-<meta property="og:description" content="FS 文件系统部分 内容来源于阅读 NPUcore 操作系统内核构建实践书籍的笔记。 当一段内容不够熟或比较不理解或者还没办法完全记忆下来时，可能会原封不动摘录。  写在〇之前因为操作系统是一个工程性的问题，要实现同一个功能可能有（也应当有）许多种不同的方法，这些方法可能大同小异，也可能相距甚远。在笔者目前学习操作系统设计所面临的最大的问题，就是要记忆一大堆管理逻辑。这些管理逻辑或许有其他的平替，">
+<meta property="og:description" content="NPUcore 操作系统内核构建读书笔记——FS部分">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115132822809.png">
 <meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115153834638.png">
 <meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115162022627.png">
 <meta property="article:published_time" content="2024-11-14T14:01:06.798Z">
-<meta property="article:modified_time" content="2024-11-15T09:18:38.844Z">
+<meta property="article:modified_time" content="2024-11-15T12:40:59.287Z">
 <meta property="article:author" content="Xein">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="NPUcore">
@@ -234,7 +234,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.9k 字
+          6.8k 字
         
       </span>
     
@@ -245,7 +245,7 @@
         
         
         
-          50 分钟
+          57 分钟
         
       </span>
     
@@ -287,7 +287,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月15日 下午
+                    本文最后更新于 2024年11月15日 晚上
                   
                 
               </p>
@@ -418,7 +418,7 @@
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> ROOT: Arc&lt;DirectoryTreeNode&gt; = &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">inode</span> = DirectoryTreeNode::<span class="hljs-title function_ invoke__">new</span>(<br>    <span class="hljs-string">&quot;&quot;</span>.<span class="hljs-title function_ invoke__">to_string</span>(),<br>    Arc::<span class="hljs-title function_ invoke__">new</span>(FileSystem::<span class="hljs-title function_ invoke__">new</span>(FS::Fat32)),<br>    OSInode::<span class="hljs-title function_ invoke__">new</span>(InodeImpl::<span class="hljs-title function_ invoke__">root_inode</span>(&amp;FILE_SYSTEM)),<br>    Weak::<span class="hljs-title function_ invoke__">new</span>()<br>    );<br>    inode.<span class="hljs-title function_ invoke__">add_special_use</span>();<br>    inode,<br>&#125;;<br></code></pre></td></tr></table></figure>
 
 <p>在通过文件树寻找指定文件的过程中，首先会判断文件的路径前缀是否在路径缓存中，这样使大量文件操作效率更高，同时NPUcore也对一些默认路径进行了路径的转化。</p>
-<h3 id="4-4-文件描述符层"><a href="#4-4-文件描述符层" class="headerlink" title="4.4 文件描述符层"></a>4.4 文件描述符层</h3><h4 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h4><p><strong>文件描述符</strong>是进程访问文件的 <strong>接口</strong>，而 <strong>Inode</strong> 是文件在文件系统中的 <strong>描述符</strong>。具体来说：</p>
+<h2 id="五、文件描述符层"><a href="#五、文件描述符层" class="headerlink" title="五、文件描述符层"></a>五、文件描述符层</h2><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p><strong>文件描述符</strong>是进程访问文件的 <strong>接口</strong>，而 <strong>Inode</strong> 是文件在文件系统中的 <strong>描述符</strong>。具体来说：</p>
 <ul>
 <li>当一个文件被打开时，操作系统首先根据文件名查找文件的 Inode，然后为该进程分配一个文件描述符，并通过文件描述符来访问文件。</li>
 <li>文件描述符在进程的文件描述符表中，而 Inode 存储在文件系统的 Inode 表中。</li>
@@ -442,8 +442,51 @@
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FileDescriptor</span> &#123;<br>    cloexec: <span class="hljs-type">bool</span>,<br>    nonblock: <span class="hljs-type">bool</span>,<br>    <span class="hljs-keyword">pub</span> file: Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>因此，在一个进程中，活跃的文件被存储在 <strong>FDT</strong> 中。我们通过访问这个 <strong>FDT</strong> 获得所需的 <strong>FD</strong> ，进而定位并处理我们想要操作的特定文件。</p>
-<h3 id="4-4-文件系统相关调用"><a href="#4-4-文件系统相关调用" class="headerlink" title="4.4 文件系统相关调用"></a>4.4 文件系统相关调用</h3><h4 id="写在前面-1"><a href="#写在前面-1" class="headerlink" title="写在前面"></a>写在前面</h4><p>NPUcore 实现了许多POSIX规定的系统调用，本章主要介绍几个与文件相关的系统调用，包括文件的打开、关闭、读取和写入。</p>
-<h4 id="4-4-1-open-调用"><a href="#4-4-1-open-调用" class="headerlink" title="4.4.1 open 调用"></a>4.4.1 open 调用</h4><h4 id="4-4-2-close-调用"><a href="#4-4-2-close-调用" class="headerlink" title="4.4.2 close 调用"></a>4.4.2 close 调用</h4><h4 id="4-4-3-read-调用"><a href="#4-4-3-read-调用" class="headerlink" title="4.4.3 read 调用"></a>4.4.3 read 调用</h4><h4 id="4-4-4-write-调用"><a href="#4-4-4-write-调用" class="headerlink" title="4.4.4 write 调用"></a>4.4.4 write 调用</h4>
+<h2 id="六、文件系统相关调用"><a href="#六、文件系统相关调用" class="headerlink" title="六、文件系统相关调用"></a>六、文件系统相关调用</h2><h3 id="写在前面-1"><a href="#写在前面-1" class="headerlink" title="写在前面"></a>写在前面</h3><p>NPUcore 实现了许多POSIX规定的系统调用，本章主要介绍几个与文件相关的系统调用，包括文件的打开、关闭、读取和写入。</p>
+<h3 id="6-1-open-调用"><a href="#6-1-open-调用" class="headerlink" title="6.1 open 调用"></a>6.1 open 调用</h3><p>该系统调用用于打开文件并返回一个<strong>FD</strong>，应用可以通过该<strong>FD</strong>执行各种操作，如读取、写入、关闭文件等。</p>
+<p>NPUcore提供给应用的接口为用户态下的sys_open系统调用（位于 <code>user/src/syscall.rs</code>），在读写一个常规文件之前，应用首先通过内核提供的 sys_open 系统调用让该文件在进程的<strong>FDT</strong>中占一项，并得到操作系统的返回值——<strong>FD</strong>，即文件关联的表项在<strong>FDT</strong>中的索引值。</p>
+<p><code>user/src/syscall.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">// 接受两个参数：</span><br><span class="hljs-comment">// path 文件名（包括路径）</span><br><span class="hljs-comment">// flags 打开标志</span><br><span class="hljs-comment">// 打开成功则返回对应的FD</span><br><span class="hljs-comment">// 失败则返回对应的错误码</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">sys_open</span>(path: &amp;<span class="hljs-type">str</span>, flags: <span class="hljs-type">u32</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span> &#123;<br>    <span class="hljs-title function_ invoke__">syscall</span>(SYSCALL_OPEN, [path.<span class="hljs-title function_ invoke__">as_str</span>() <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>, flags <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>, <span class="hljs-number">0</span>])<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>NPUcore中的flags可以为如下几种（多种标志可以共存）：</p>
+<ul>
+<li>0：RDONLY 只读模式</li>
+<li>0x001（即第0位被设置）：WRONLY 只写模式</li>
+<li>0x002（即第1位被设置）：RDWR 可读可写</li>
+<li>0x200（即第9位被设置）：CREATE 允许创建<ul>
+<li>找不到该文件时创建</li>
+<li>找得到该文件时截断（将文件大小清零）</li>
+</ul>
+</li>
+<li>0x400（即第10位被设置）：TRUNC 截断（清空并将文件大小置零）</li>
+</ul>
+<p><code>user/src/lib.rs</code></p>
+<h6 id="教材错了！（其中一版）"><a href="#教材错了！（其中一版）" class="headerlink" title="教材错了！（其中一版）"></a>教材错了！（其中一版）</h6><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-built_in">bitflags!</span> &#123;<br>    <span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">OpenFlags</span>: <span class="hljs-type">u32</span> &#123;<br>        <span class="hljs-keyword">const</span> RDONLY = <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">const</span> WRONLY = <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">const</span> RDWR = <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">1</span>;<br>        <span class="hljs-keyword">const</span> CREATE = <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">9</span>;<br>        <span class="hljs-keyword">const</span> TRUNC = <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">10</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>user/src/user_call.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">open</span>(path: &amp;<span class="hljs-type">str</span>, flags: OpenFlags) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span> &#123;<br>    <span class="hljs-title function_ invoke__">sys_open</span>(path, flags.bits)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>sys_open 传给内核的参数只有待打开文件的文件名字符串的起始地址（需要保证该字符串以 <code>\0</code> 结尾）和标志位。</p>
+<p>由于每个通用寄存器为64位，需要先将u32的flags转换为usize来对齐。sys_open在NPUcore内核中调用了sys_openat函数（实验环节中自行编写）：</p>
+<p><code>os/src/syscall/mod.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rust">SYSCALL_OPEN =&gt; <span class="hljs-title function_ invoke__">sys_openat</span>(AT_FDCWD, args[<span class="hljs-number">0</span>] <span class="hljs-keyword">as</span> *<span class="hljs-keyword">const</span> <span class="hljs-type">u8</span>, args[<span class="hljs-number">1</span>] <span class="hljs-keyword">as</span> <span class="hljs-type">u32</span>, <span class="hljs-number">0o777u32</span>),<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-2-close-调用"><a href="#6-2-close-调用" class="headerlink" title="6.2 close 调用"></a>6.2 close 调用</h3><p>该系统调用用于关闭文件（打开文件做了相应操作之后，需要关闭该文件，让进程释放被该文件占用的内核资源）。</p>
+<p>与open一样，NPUcore提供用户态的sys_close系统调用给应用。作用机制与sys_open相似。</p>
+<p>其内核中的函数签名：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">sys_close</span>(fd: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span><br></code></pre></td></tr></table></figure>
+
+<p>接收一个参数 <code>fd</code> ，即<strong>FD（文件描述符）</strong>类型（在此处为 usize）。<code>fd</code> 表示要关闭的<strong>FD</strong>，当文件被关闭后，该文件在内核中的资源会被释放，<strong>FD</strong> 会被回收，这样做之后，进程就不能继续使用该<strong>FD</strong>进行文件读写了。如果成功关闭返回 SUCCESS，否则返回对应错误码。</p>
+<p><code>src/os/syscall.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">sys_close</span>(fd: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">isize</span> &#123;<br>    info!(<span class="hljs-string">&quot;[sys_close] fd: &#123;&#125;&quot;</span>, fd);<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">task</span> = <span class="hljs-title function_ invoke__">current_task</span>().<span class="hljs-title function_ invoke__">unwrap</span>();<br>    <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">fd_table</span> = task.files.<span class="hljs-title function_ invoke__">lock</span>();<br>    <span class="hljs-keyword">match</span> fd_table.<span class="hljs-title function_ invoke__">remove</span>(fd) &#123;<br>        <span class="hljs-title function_ invoke__">Ok</span>(_) =&gt; SUCCESS,<br>        <span class="hljs-title function_ invoke__">Err</span>(errno) =&gt; errno,<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>只需要将进程控制块中的<strong>FDT</strong>对应的一项改为<strong>None</strong>,代表其已经空闲，就可以实现<strong>sys_close</strong>。</p>
+<p>具体实现</p>
+<p><code>os/src/fs/mod.rs/impl FdTable</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#[inline]</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">remove</span>(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, fd: <span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;FileDescriptor, <span class="hljs-type">isize</span>&gt; &#123;<br>    <span class="hljs-keyword">if</span> fd &gt;= <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">len</span>() &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-title function_ invoke__">Err</span>(EBADF);<br>    &#125;<br>    <span class="hljs-comment">// 先尝试将fd从inner数组中取出</span><br>    <span class="hljs-keyword">match</span> <span class="hljs-keyword">self</span>.inner[fd].<span class="hljs-title function_ invoke__">take</span>() &#123;<br>        <span class="hljs-comment">// 成功则将fd push到recycled数组中</span><br>        <span class="hljs-title function_ invoke__">Some</span>(file_descriptor) =&gt; &#123;<br>            <span class="hljs-keyword">self</span>.recycled.<span class="hljs-title function_ invoke__">push</span>(fd <span class="hljs-keyword">as</span> <span class="hljs-type">u8</span>);<br>            <span class="hljs-title function_ invoke__">Ok</span>(file_descriptor)<br>        &#125;<br>        <span class="hljs-literal">None</span> =&gt; <span class="hljs-title function_ invoke__">Err</span>(EBADF),<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="6-3-read-调用"><a href="#6-3-read-调用" class="headerlink" title="6.3 read 调用"></a>6.3 read 调用</h3><h3 id="6-4-write-调用"><a href="#6-4-write-调用" class="headerlink" title="6.4 write 调用"></a>6.4 write 调用</h3><h3 id="6-5-fstat-调用"><a href="#6-5-fstat-调用" class="headerlink" title="6.5 fstat 调用"></a>6.5 fstat 调用</h3><h3 id="6-6-fstatat-调用"><a href="#6-6-fstatat-调用" class="headerlink" title="6.6 fstatat 调用"></a>6.6 fstatat 调用</h3><h2 id="七、虚拟文件系统及接口"><a href="#七、虚拟文件系统及接口" class="headerlink" title="七、虚拟文件系统及接口"></a>七、虚拟文件系统及接口</h2><h3 id="7-1-VFS简介"><a href="#7-1-VFS简介" class="headerlink" title="7.1 VFS简介"></a>7.1 VFS简介</h3><p><strong>Virtual File System</strong>（简称 VFS，即虚拟文件系统），也可称虚拟文件转换，是一个内核软件层，用于处理与Unix标准文件系统相关的所有系统调用。为用户程序提供文件和文件系统操作的统一接口，屏蔽不同文件系统的差异和操作细节。</p>
+
                 
               </div>
             

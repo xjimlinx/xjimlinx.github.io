@@ -19,15 +19,15 @@
   <meta name="author" content="Xein">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Hexo折腾笔记一、GitHub 建仓建立一个 GitHub 仓库，名字为 [用户名].github.io 比方说我的用户名是 xjimlinx，那么就创建一个仓库名为 xjimlinx.github.io 可以设置为 private 也可以设置为 public 然后进入到该仓库主页面 复制好仓库地址做准备 注意如果是 git类型地址 要在本机上设置好 ssh key 同时在 GitHub 上设置">
+    <meta name="description" content="使用Hexo和GitHub快速搭建个人网站">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Hexo 折腾笔记">
 <meta property="og:url" content="http://xjimlinx.github.io/2024/11/13/Hexo%E6%8A%98%E8%85%BE%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="XeinDeBlog">
-<meta property="og:description" content="Hexo折腾笔记一、GitHub 建仓建立一个 GitHub 仓库，名字为 [用户名].github.io 比方说我的用户名是 xjimlinx，那么就创建一个仓库名为 xjimlinx.github.io 可以设置为 private 也可以设置为 public 然后进入到该仓库主页面 复制好仓库地址做准备 注意如果是 git类型地址 要在本机上设置好 ssh key 同时在 GitHub 上设置">
+<meta property="og:description" content="使用Hexo和GitHub快速搭建个人网站">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-11-12T19:21:25.000Z">
-<meta property="article:modified_time" content="2024-11-13T18:13:21.532Z">
+<meta property="article:modified_time" content="2024-11-15T12:37:58.673Z">
 <meta property="article:author" content="Xein">
 <meta property="article:tag" content="个人博客">
 <meta property="article:tag" content="Web">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1k 字
+          1.1k 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          9 分钟
+          10 分钟
         
       </span>
     
@@ -283,7 +283,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月14日 凌晨
+                    本文最后更新于 2024年11月15日 晚上
                   
                 
               </p>
@@ -362,7 +362,10 @@
 <li>categories：非必选，如果需要多层目录就像上面那样写，就会有一级目录 <strong>Web</strong> 和二级目录（一级目录子目录）<strong>网站搭建</strong>。同理可以设置多层，只需要在下面多写几个 “- xxx” 形式的行</li>
 <li>updated：非必选，修改时间</li>
 <li>date：非必选，创建时间</li>
-<li>tag：像上面那样写会有从 <strong>tag1</strong> 到 <strong>tagn</strong> 的多个 <strong>tag</strong>，<strong>tag</strong> 没有层级关系存在</li>
+<li>tag：非必选，像上面那样写会有从 <strong>tag1</strong> 到 <strong>tagn</strong> 的多个 <strong>tag</strong>，<strong>tag</strong> 没有层级关系存在</li>
+<li>comments：非必选，是否开启评论，取值范围为 <strong>false</strong> 和 <strong>true</strong>，此外还需要在 <code>_config.yml</code> 里进行相关设置。</li>
+<li>description：非必选，摘要，也可以使用如下方式，在开头格式下方添加一个</li>
+<li><code>&lt;!--more--&gt;</code> ，然后这个和开头格式之间的内容就是摘要</li>
 </ul>
 <hr>
 <h2 id="四、上传到-GitHub"><a href="#四、上传到-GitHub" class="headerlink" title="四、上传到 GitHub"></a>四、上传到 GitHub</h2><p><strong>以下方法我觉得方便，但是不一定对所有人来说都方便，所以可以参考，因为我网络环境不是很好，使用 hexo-deployer 因为没有详细的输出，会出现傻等的情况，并且 hexo-deployer 在 commit 步骤过后就当作是提交了，只能再更新内容才可以提交 push，所以我使用下面的方法</strong></p>
