@@ -19,12 +19,12 @@
   <meta name="author" content="Xein">
   <meta name="keywords" content="">
   
-    <meta name="description" content="操作系统笔记〇、概述一、内存管理1.1 计算机体系结构&#x2F;内存层次内存管理方式 重定位（relocation） 分段（segmentation） 分页（paging） 虚拟存储（virtual memory） 1.2 地址空间&amp;地址生成1.2.1 地址空间的定义物理地址空间：起始地址0,直到MAX of sys 逻辑地址空间：在CPU运行的进程看到的地址，起始地址0,直到MAX o">
+    <meta name="description" content="操作系统笔记〇、概述2024-11-15 将现代操作系统简化视为： 内核 + 内核提供的系统调用集合 + 用户空间 一、内存管理1.1 计算机体系结构&#x2F;内存层次内存管理方式 重定位（relocation） 分段（segmentation） 分页（paging） 虚拟存储（virtual memory） 1.2 地址空间&amp;地址生成1.2.1 地址空间的定义物理地址空间：起始地址0,">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作系统笔记">
 <meta property="og:url" content="http://xjimlinx.github.io/2024/11/01/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="XeinDeBlog">
-<meta property="og:description" content="操作系统笔记〇、概述一、内存管理1.1 计算机体系结构&#x2F;内存层次内存管理方式 重定位（relocation） 分段（segmentation） 分页（paging） 虚拟存储（virtual memory） 1.2 地址空间&amp;地址生成1.2.1 地址空间的定义物理地址空间：起始地址0,直到MAX of sys 逻辑地址空间：在CPU运行的进程看到的地址，起始地址0,直到MAX o">
+<meta property="og:description" content="操作系统笔记〇、概述2024-11-15 将现代操作系统简化视为： 内核 + 内核提供的系统调用集合 + 用户空间 一、内存管理1.1 计算机体系结构&#x2F;内存层次内存管理方式 重定位（relocation） 分段（segmentation） 分页（paging） 虚拟存储（virtual memory） 1.2 地址空间&amp;地址生成1.2.1 地址空间的定义物理地址空间：起始地址0,">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-11-01T11:24:32.000Z">
 <meta property="article:modified_time" content="2024-11-01T12:17:03.000Z">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          200 字
+          275 字
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          2 分钟
+          3 分钟
         
       </span>
     
@@ -291,7 +291,10 @@
             
               <div class="markdown-body">
                 
-                <h1 id="操作系统笔记"><a href="#操作系统笔记" class="headerlink" title="操作系统笔记"></a>操作系统笔记</h1><h2 id="〇、概述"><a href="#〇、概述" class="headerlink" title="〇、概述"></a>〇、概述</h2><h2 id="一、内存管理"><a href="#一、内存管理" class="headerlink" title="一、内存管理"></a>一、内存管理</h2><h4 id="1-1-计算机体系结构-内存层次"><a href="#1-1-计算机体系结构-内存层次" class="headerlink" title="1.1 计算机体系结构&#x2F;内存层次"></a>1.1 计算机体系结构&#x2F;内存层次</h4><p>内存管理方式</p>
+                <h1 id="操作系统笔记"><a href="#操作系统笔记" class="headerlink" title="操作系统笔记"></a>操作系统笔记</h1><h2 id="〇、概述"><a href="#〇、概述" class="headerlink" title="〇、概述"></a>〇、概述</h2><p>2024-11-15</p>
+<p>将现代操作系统简化视为：</p>
+<p><strong>内核</strong> + <strong>内核提供的系统调用集合</strong> + <strong>用户空间</strong></p>
+<h2 id="一、内存管理"><a href="#一、内存管理" class="headerlink" title="一、内存管理"></a>一、内存管理</h2><h4 id="1-1-计算机体系结构-内存层次"><a href="#1-1-计算机体系结构-内存层次" class="headerlink" title="1.1 计算机体系结构&#x2F;内存层次"></a>1.1 计算机体系结构&#x2F;内存层次</h4><p>内存管理方式</p>
 <p>重定位（relocation）</p>
 <p>分段（segmentation）</p>
 <p>分页（paging）</p>
@@ -300,7 +303,8 @@
 <p>逻辑地址空间：在CPU运行的进程看到的地址，起始地址0,直到MAX of progress（process）</p>
 <h5 id="1-2-2-地址生成"><a href="#1-2-2-地址生成" class="headerlink" title="1.2.2 地址生成"></a>1.2.2 地址生成</h5><p>逻辑地址生成——编译</p>
 <p>经过编译、汇编、链接之后，得到可执行文件，被CPU加载程序到内存上时（重定位），就会得到逻辑地址</p>
-<h5 id="1-2-3-地址检查"><a href="#1-2-3-地址检查" class="headerlink" title="1.2.3 地址检查"></a>1.2.3 地址检查</h5><h4 id="1-3-连续内存分配"><a href="#1-3-连续内存分配" class="headerlink" title="1.3 连续内存分配"></a>1.3 连续内存分配</h4><h4 id="1-4-伙伴系统"><a href="#1-4-伙伴系统" class="headerlink" title="1.4 伙伴系统"></a>1.4 伙伴系统</h4><h2 id="二、进程管理"><a href="#二、进程管理" class="headerlink" title="二、进程管理"></a>二、进程管理</h2><h2 id="三、文件系统"><a href="#三、文件系统" class="headerlink" title="三、文件系统"></a>三、文件系统</h2><h2 id="四、IO"><a href="#四、IO" class="headerlink" title="四、IO"></a>四、IO</h2><h2 id="五、多处理器"><a href="#五、多处理器" class="headerlink" title="五、多处理器"></a>五、多处理器</h2>
+<h5 id="1-2-3-地址检查"><a href="#1-2-3-地址检查" class="headerlink" title="1.2.3 地址检查"></a>1.2.3 地址检查</h5><h4 id="1-3-连续内存分配"><a href="#1-3-连续内存分配" class="headerlink" title="1.3 连续内存分配"></a>1.3 连续内存分配</h4><h4 id="1-4-伙伴系统"><a href="#1-4-伙伴系统" class="headerlink" title="1.4 伙伴系统"></a>1.4 伙伴系统</h4><h2 id="二、进程管理"><a href="#二、进程管理" class="headerlink" title="二、进程管理"></a>二、进程管理</h2><h2 id="三、文件系统"><a href="#三、文件系统" class="headerlink" title="三、文件系统"></a>三、文件系统</h2><p><strong>Inode</strong>：Index Node，索引节点，存储文件的元数据，关键在于文件的描述和索引以及其他元数据，但不存储文件的内容数据。</p>
+<h2 id="四、IO"><a href="#四、IO" class="headerlink" title="四、IO"></a>四、IO</h2><h2 id="五、多处理器"><a href="#五、多处理器" class="headerlink" title="五、多处理器"></a>五、多处理器</h2>
                 
               </div>
             
