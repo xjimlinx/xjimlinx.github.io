@@ -19,27 +19,24 @@
   <meta name="author" content="Xein">
   <meta name="keywords" content="">
   
-    <meta name="description" content="KDE使用技巧桌面虚拟桌面在设置中可以添加虚拟桌面，然后有如下快捷键：  Ctrl+Fx：Fx 即键盘最上方的一排功能键， x 代表数字，即要切换到第几个虚拟桌面。 三指滑动：同样的，使用笔记本触摸板时，三指滑动到上下左右四个方向可以切换到对应位置的虚拟桌面。  TerminalKonsole&#x2F;YakuakeKonsole：KDE官方软件仓库的终端软件。  Yakuake：KDE官方仓库">
+    <meta name="description" content="Shell常用工具指南一、常用Shell介绍1.0. sh1.1. bash1.2. fish1.3. zsh1.4. posh二、常用Shell 命令行工具根据入门到熟练的所需使用频率做出了如下近似排序（可能会与其他人略有出入） 2.1 文件管理相关 cd ls mv cp touch mkdir cat rm &amp; rmdir ln which file head &amp; tail">
 <meta property="og:type" content="article">
-<meta property="og:title" content="KDE使用技巧">
-<meta property="og:url" content="http://xjimlinx.github.io/2024/11/13/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:title" content="Shell常用工具指南">
+<meta property="og:url" content="http://xjimlinx.github.io/2024/11/15/Shell%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%8C%87%E5%8D%97/index.html">
 <meta property="og:site_name" content="XeinDeBlog">
-<meta property="og:description" content="KDE使用技巧桌面虚拟桌面在设置中可以添加虚拟桌面，然后有如下快捷键：  Ctrl+Fx：Fx 即键盘最上方的一排功能键， x 代表数字，即要切换到第几个虚拟桌面。 三指滑动：同样的，使用笔记本触摸板时，三指滑动到上下左右四个方向可以切换到对应位置的虚拟桌面。  TerminalKonsole&#x2F;YakuakeKonsole：KDE官方软件仓库的终端软件。  Yakuake：KDE官方仓库">
+<meta property="og:description" content="Shell常用工具指南一、常用Shell介绍1.0. sh1.1. bash1.2. fish1.3. zsh1.4. posh二、常用Shell 命令行工具根据入门到熟练的所需使用频率做出了如下近似排序（可能会与其他人略有出入） 2.1 文件管理相关 cd ls mv cp touch mkdir cat rm &amp; rmdir ln which file head &amp; tail">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://xjimlinx.github.io/home/xein/CODE/WEBCODE/xeindeblog/source/img/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/Konsole1.png">
-<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241113155734453.png">
-<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241113160004511.png">
-<meta property="article:published_time" content="2024-11-13T07:49:23.000Z">
-<meta property="article:modified_time" content="2024-11-13T07:34:23.000Z">
+<meta property="article:published_time" content="2024-11-15T06:35:00.000Z">
+<meta property="article:modified_time" content="2024-11-15T06:49:37.339Z">
 <meta property="article:author" content="Xein">
-<meta property="article:tag" content="KDE">
-<meta property="article:tag" content="技巧">
+<meta property="article:tag" content="基础">
+<meta property="article:tag" content="Shell">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://xjimlinx.github.io/home/xein/CODE/WEBCODE/xeindeblog/source/img/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/Konsole1.png">
   
   
   
-  <title>KDE使用技巧 - XeinDeBlog</title>
+  <title>Shell常用工具指南 - XeinDeBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -205,7 +202,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="KDE使用技巧"></span>
+            <span id="subtitle" data-typed-text="Shell常用工具指南"></span>
           
         </div>
 
@@ -221,8 +218,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-13 15:49" pubdate>
-          2024-11-13 15:49
+        <time datetime="2024-11-15 14:35" pubdate>
+          2024-11-15 14:35
         </time>
       </span>
     
@@ -233,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          272 字
+          107 字
         
       </span>
     
@@ -244,7 +241,7 @@
         
         
         
-          3 分钟
+          1 分钟
         
       </span>
     
@@ -281,12 +278,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">KDE使用技巧</h1>
+            <h1 id="seo-header">Shell常用工具指南</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月13日 下午
+                    本文最后更新于 2024年11月15日 下午
                   
                 
               </p>
@@ -294,30 +291,23 @@
             
               <div class="markdown-body">
                 
-                <h1 id="KDE使用技巧"><a href="#KDE使用技巧" class="headerlink" title="KDE使用技巧"></a>KDE使用技巧</h1><h2 id="桌面"><a href="#桌面" class="headerlink" title="桌面"></a>桌面</h2><h3 id="虚拟桌面"><a href="#虚拟桌面" class="headerlink" title="虚拟桌面"></a>虚拟桌面</h3><p>在设置中可以添加虚拟桌面，然后有如下快捷键：</p>
-<ul>
-<li><code>Ctrl+Fx</code>：<code>Fx</code> 即键盘最上方的一排功能键， <code>x</code> 代表数字，即要切换到第几个虚拟桌面。</li>
-<li><code>三指滑动</code>：同样的，使用笔记本触摸板时，<strong>三指滑动</strong>到上下左右四个方向可以切换到对应位置的<strong>虚拟桌面</strong>。</li>
-</ul>
-<h2 id="Terminal"><a href="#Terminal" class="headerlink" title="Terminal"></a>Terminal</h2><h3 id="Konsole-Yakuake"><a href="#Konsole-Yakuake" class="headerlink" title="Konsole&#x2F;Yakuake"></a>Konsole&#x2F;Yakuake</h3><p><strong>Konsole</strong>：KDE官方软件仓库的终端软件。</p>
-<p><img src="/home/xein/CODE/WEBCODE/xeindeblog/source/img/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/Konsole1.png" srcset="/img/loading.gif" lazyload alt="image-20241113155907564"></p>
-<p><strong>Yakuake</strong>：KDE官方仓库的基于 <strong>Konsole</strong> 的下拉终端窗口软件。</p>
-<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241113155734453.png" srcset="/img/loading.gif" lazyload alt="image-20241113155734453"></p>
-<blockquote>
-<p>此处仅介绍Arch下的安装方式</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> pacman -S yakuake konsole<br></code></pre></td></tr></table></figure>
-
-<p>安装这两个软件</p>
-<p>打开 <strong>yakuake</strong> 后会默认使用快捷键 <code>F12</code>呼出</p>
-<p>然后可以取消勾选下拉窗口右下角三个点里面的 <strong>窗口失去焦点时保持展开</strong>。这样切换到别的窗口时就会自动收回下拉窗口。</p>
-<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241113160004511.png" srcset="/img/loading.gif" lazyload alt="image-20241113160004511"></p>
-<p>这两个软件有许多快捷键是一样的：</p>
-<ul>
-<li><code>Ctrl+Shift+T</code>：在当前窗口中新建一个标签页</li>
-<li><code>Alt+n</code>：<code>n</code> 为数字，表示要切换到哪个标签页</li>
-</ul>
-
+                <h1 id="Shell常用工具指南"><a href="#Shell常用工具指南" class="headerlink" title="Shell常用工具指南"></a>Shell常用工具指南</h1><h2 id="一、常用Shell介绍"><a href="#一、常用Shell介绍" class="headerlink" title="一、常用Shell介绍"></a>一、常用Shell介绍</h2><h3 id="1-0-sh"><a href="#1-0-sh" class="headerlink" title="1.0. sh"></a>1.0. sh</h3><h3 id="1-1-bash"><a href="#1-1-bash" class="headerlink" title="1.1. bash"></a>1.1. bash</h3><h3 id="1-2-fish"><a href="#1-2-fish" class="headerlink" title="1.2. fish"></a>1.2. fish</h3><h3 id="1-3-zsh"><a href="#1-3-zsh" class="headerlink" title="1.3. zsh"></a>1.3. zsh</h3><h3 id="1-4-posh"><a href="#1-4-posh" class="headerlink" title="1.4. posh"></a>1.4. posh</h3><h2 id="二、常用Shell-命令行工具"><a href="#二、常用Shell-命令行工具" class="headerlink" title="二、常用Shell 命令行工具"></a>二、常用Shell 命令行工具</h2><p>根据入门到熟练的所需使用频率做出了如下近似排序（可能会与其他人略有出入）</p>
+<h3 id="2-1-文件管理相关"><a href="#2-1-文件管理相关" class="headerlink" title="2.1 文件管理相关"></a>2.1 文件管理相关</h3><ol>
+<li>cd</li>
+<li>ls</li>
+<li>mv</li>
+<li>cp</li>
+<li>touch</li>
+<li>mkdir</li>
+<li>cat</li>
+<li>rm &amp; rmdir</li>
+<li>ln</li>
+<li>which</li>
+<li>file</li>
+<li>head &amp; tail</li>
+<li>stat：打印信息节点的内容</li>
+</ol>
+<h3 id="三、拓展（针对-zsh）"><a href="#三、拓展（针对-zsh）" class="headerlink" title="三、拓展（针对 zsh）"></a>三、拓展（针对 zsh）</h3><h4 id="3-1-oh-my-zsh"><a href="#3-1-oh-my-zsh" class="headerlink" title="3.1 oh-my-zsh"></a>3.1 oh-my-zsh</h4><h4 id="3-2-powerlevel10k"><a href="#3-2-powerlevel10k" class="headerlink" title="3.2 powerlevel10k"></a>3.2 powerlevel10k</h4><h4 id="3-3-zsh-users"><a href="#3-3-zsh-users" class="headerlink" title="3.3 zsh-users"></a>3.3 zsh-users</h4><h5 id="3-3-1-zsh-syntax-highlighting"><a href="#3-3-1-zsh-syntax-highlighting" class="headerlink" title="3.3.1 zsh-syntax-highlighting"></a>3.3.1 zsh-syntax-highlighting</h5><h5 id="3-3-2-zsh-autosuggetions"><a href="#3-3-2-zsh-autosuggetions" class="headerlink" title="3.3.2 zsh-autosuggetions"></a>3.3.2 zsh-autosuggetions</h5>
                 
               </div>
             
@@ -345,7 +335,7 @@
   
     <span>></span>
     
-  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/KDE/" class="category-chain-item">KDE</a>
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/Shell/" class="category-chain-item">Shell</a>
   
   
 
@@ -364,9 +354,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/KDE/" class="print-no-link">#KDE</a>
+        <a href="/tags/%E5%9F%BA%E7%A1%80/" class="print-no-link">#基础</a>
       
-        <a href="/tags/%E6%8A%80%E5%B7%A7/" class="print-no-link">#技巧</a>
+        <a href="/tags/Shell/" class="print-no-link">#Shell</a>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
       
     </div>
   
@@ -378,8 +370,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>KDE使用技巧</div>
-      <div>http://xjimlinx.github.io/2024/11/13/KDE使用技巧/</div>
+      <div>Shell常用工具指南</div>
+      <div>http://xjimlinx.github.io/2024/11/15/Shell常用工具指南/</div>
     </div>
     <div class="license-meta">
       
@@ -391,7 +383,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月13日</div>
+          <div>2024年11月15日</div>
         </div>
       
       
@@ -423,18 +415,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/15/Shell%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%8C%87%E5%8D%97/" title="Shell常用工具指南">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Shell常用工具指南</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/11/13/KDE%E7%BE%8E%E5%8C%96%E6%8C%87%E5%8D%97/" title="KDE美化指南">
-                        <span class="hidden-mobile">KDE美化指南</span>
+                      <a href="/2024/11/13/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" title="KDE使用技巧">
+                        <span class="hidden-mobile">KDE使用技巧</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
