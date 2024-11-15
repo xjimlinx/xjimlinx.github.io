@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/xein.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1d1c2c">
+  <meta name="author" content="Xein">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="FS 文件系统部分 内容来源于阅读 NPUcore 操作系统内核构建实践书籍的笔记。 当一段内容不够熟或比较不理解或者还没办法完全记忆下来时，可能会原封不动摘录。  写在〇之前因为操作系统是一个工程性的问题，要实现同一个功能可能有（也应当有）许多种不同的方法，这些方法可能大同小异，也可能相距甚远。在笔者目前学习操作系统设计所面临的最大的问题，就是要记忆一大堆管理逻辑。这些管理逻辑或许有其他的平替，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FS 文件系统部分">
+<meta property="og:url" content="http://xjimlinx.github.io/2024/11/14/FS%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E9%83%A8%E5%88%86/index.html">
+<meta property="og:site_name" content="XeinDeBlog">
+<meta property="og:description" content="FS 文件系统部分 内容来源于阅读 NPUcore 操作系统内核构建实践书籍的笔记。 当一段内容不够熟或比较不理解或者还没办法完全记忆下来时，可能会原封不动摘录。  写在〇之前因为操作系统是一个工程性的问题，要实现同一个功能可能有（也应当有）许多种不同的方法，这些方法可能大同小异，也可能相距甚远。在笔者目前学习操作系统设计所面临的最大的问题，就是要记忆一大堆管理逻辑。这些管理逻辑或许有其他的平替，">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115132822809.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115153834638.png">
+<meta property="og:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115162022627.png">
+<meta property="article:published_time" content="2024-11-14T14:01:06.798Z">
+<meta property="article:modified_time" content="2024-11-15T09:18:38.844Z">
+<meta property="article:author" content="Xein">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="NPUcore">
+<meta property="article:tag" content="FileSystem">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://xjimlinx.github.io/home/xein/.config/Typora/typora-user-images/image-20241115132822809.png">
+  
+  
+  
+  <title>FS 文件系统部分 - XeinDeBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"xjimlinx.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>XeinDeBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/cyberpunk_black_lucy.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="FS 文件系统部分"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Xein
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-14 22:01" pubdate>
+          2024-11-14 22:01
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          50 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">FS 文件系统部分</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年11月15日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="FS-文件系统部分"><a href="#FS-文件系统部分" class="headerlink" title="FS 文件系统部分"></a>FS 文件系统部分</h1><blockquote>
+<p>内容来源于阅读 NPUcore 操作系统内核构建实践书籍的笔记。</p>
+<p>当一段内容不够熟或比较不理解或者还没办法完全记忆下来时，可能会<strong>原封不动摘录</strong>。</p>
+</blockquote>
+<h2 id="写在〇之前"><a href="#写在〇之前" class="headerlink" title="写在〇之前"></a>写在〇之前</h2><p>因为操作系统是一个工程性的问题，要实现同一个功能可能有（也应当有）许多种不同的方法，这些方法可能大同小异，也可能相距甚远。在笔者目前学习操作系统设计所面临的最大的问题，就是要记忆一大堆管理逻辑。这些管理逻辑或许有其他的平替，也可能这些管理逻辑可以组成一个耦合度不低的管理逻辑集合，同样可以被其他的集合平替，很多时候不知道为什么这样设计（当然有可能是学习操作系统这门课时没有好好学的问题），所以理解记忆起来会十分麻烦，当务之急是先将这些逻辑记忆起来，再不济记忆逻辑之间的关系，后面再来细究（毕竟再过一个礼拜就到自己写的截止期了）</p>
+<h2 id="〇、概述"><a href="#〇、概述" class="headerlink" title="〇、概述"></a>〇、概述</h2><p>内核添加文件系统的大致开发过程</p>
+<h4 id="第一步：能够写出与文件访问相关的应用"><a href="#第一步：能够写出与文件访问相关的应用" class="headerlink" title="第一步：能够写出与文件访问相关的应用"></a>第一步：能够写出与文件访问相关的应用</h4><h4 id="第二步：实现-easyfs-文件系统"><a href="#第二步：实现-easyfs-文件系统" class="headerlink" title="第二步：实现 easyfs 文件系统"></a>第二步：实现 easyfs 文件系统</h4><blockquote>
+<p>可以先在用户态实现文件系统，并在用户态完成文件系统功能的基本测试并基本验证其实现正确性之后，将该模块嵌入到系统内核中。然后实现文件系统对接的接口，这样就可以让操作系统拥有一个简单可用的文件系统.</p>
+</blockquote>
+<p>文件系统的整体架构自下而上可分为五层：</p>
+<ul>
+<li>磁盘块设备接口层：读写磁盘块设备的trait接口</li>
+<li>块缓存层：位于内存的磁盘块数据缓存</li>
+<li>磁盘数据结构层：表示磁盘文件系统的数据结构</li>
+<li>磁盘块管理器层：实现对磁盘文件系统的管理</li>
+<li>索引节点层：实现文件创建&#x2F;打开&#x2F;读写等操作</li>
+</ul>
+<p><strong>最底层</strong>（<strong>磁盘块设备接口层</strong>）就是对块设备的访问操作接口。包括：</p>
+<ul>
+<li>read_block 函数：将数据从设备读取到内存缓冲区中</li>
+<li>write_block 函数：将数据从内存缓冲区写入到设备中</li>
+</ul>
+<p>数据需要以块为单位进行读写。</p>
+<p>然后，为了让程序可以<strong>自动化管理</strong>，以及增加编程正确性——当一个块内容被程序读取到缓冲区，并修改，还未写回到块设备的时候，另一个程序将该块的内容再读到另一个缓冲区，而不是使用第一个程序的缓冲区内的数据，将会造成<strong>数据不一致</strong>。所以添加<strong>第二层抽象层——块缓存层</strong>。</p>
+<p>在<strong>块缓存</strong>基础之上，在内存中方便地处理文件系统在磁盘上的各种数据，就是<strong>第三层抽象层——磁盘数据结构层</strong>。</p>
+<p>文件系统中所有需要持久保存的数据都会放到磁盘上，包括管理文件系统的<strong>超级块（Super Block）</strong>，<strong>索引节点位图区</strong>和<strong>数据块位图区</strong>（管理空闲磁盘块），以及<strong>索引节点区</strong>（管理文件）和<strong>数据块区</strong>（放置文件数据）。管理上述这些磁盘数据的控制逻辑主要集中在<strong>第四层抽象层——磁盘块管理器层</strong>。</p>
+<p>对于单个文件的管理和读写的控制逻辑主要是索引节点（文件控制块）来完成，即<strong>第五层抽象层——索引节点层</strong>。</p>
+<h4 id="第三步：把-easyfs-文件系统加入到内核中"><a href="#第三步：把-easyfs-文件系统加入到内核中" class="headerlink" title="第三步：把 easyfs 文件系统加入到内核中"></a>第三步：把 easyfs 文件系统加入到内核中</h4><p>先在 <strong>Qemu</strong> 模拟的 <strong>virtio</strong> 块设备上实现块设备驱动程序。因为要直接使用 virtio-drivers crate 中的块设备驱动，所以只要提供这个块设备驱动程序所需要的内存申请与释放以及虚实地址转换的4个函数就可以。在之前操作系统中的<strong>虚存管理</strong>实现中已经有这些函数。</p>
+<p>然后是将文件访问相关的系统调用与 easyfs 为俄舰系统连接起来。在easyfs文件系统中没有进程概念，进程是程序运行过程中访问资源的管理实体，而之前的进程没有管理文件这种资源。琐细需要扩展进程的管理范围，将文件也纳入到进程的管理之中。因为需要多个进程访问文件，所以需要文件有共享的属性，随之伴生的是 <strong>open&#x2F;close&#x2F;read&#x2F;write</strong> 系统调用，便于进程通过互斥或共享方式访问文件。</p>
+<p>内核中的进程看到的文件是一个便于访问的 <strong>Inode</strong>，在此需要对 <strong>Inode</strong> 结构进一步封装，形成 <strong>OSInode</strong> 结构，以表示进程中一个打开的常规文件。进程为了进一步管理多个文件，需要扩展文件描述符表（给进程新加一个属性）。这样进程通过系统调用打开一个文件后，会讲文件加入到自身的文件描述符表中，并进一步通过文件描述符（也就是某个特定文件）来读写该文件。对于应用程序而言，它理解的磁盘数据是常规的文件和目录，不是 <strong>OSInode</strong> 这样相对复杂的结构。常规文件对应的 <strong>OSInode</strong> 是操作系统内核中的文件控制块数据结构的实例。其实现了 <strong>File Trait</strong> 定义的函数接口。这些 <strong>OSInode</strong> 实例会放入到进程文件描述符表中，并通过 sys_read&#x2F;write 系统调用来完成读写文件的服务。这样就建立了文件与 <strong>OSInode</strong> 的对应关系，通过上面描述的三个开发步骤将形成包含文件系统的操作系统内核，可给应用提供基于文件的系统调用服务。</p>
+<hr>
+<h2 id="一、块设备接口层"><a href="#一、块设备接口层" class="headerlink" title="一、块设备接口层"></a>一、块设备接口层</h2><p><code>easy-fs/src/block_dev.rs</code></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">BlockDevice</span>: <span class="hljs-built_in">Send</span> + <span class="hljs-built_in">Sync</span> + Any &#123;<br>	<span class="hljs-comment">// 将编号为 block_id 的块从磁盘读入内存的缓冲区buf</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">read_block</span>(&amp;<span class="hljs-keyword">self</span>, block_id: <span class="hljs-type">usize</span>, buf: &amp;<span class="hljs-keyword">mut</span> [<span class="hljs-type">u8</span>]);<br>    <span class="hljs-comment">// 将内存缓冲区buf中的数据写入磁盘编号为 block_id 的块</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">write_block</span>(&amp;<span class="hljs-keyword">self</span>, block_id: <span class="hljs-type">usize</span>, buf: &amp;[<span class="hljs-type">u8</span>]);<br>    <span class="hljs-comment">// 对磁盘编号为 block_id 的块进行擦除</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">clear_block</span>(&amp;<span class="hljs-keyword">self</span>, block_id: <span class="hljs-type">usize</span>, num: <span class="hljs-type">u8</span>)&#123;...&#125;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">clear_mult_block</span>(&amp;<span class="hljs-keyword">self</span>, block_id: <span class="hljs-type">usize</span>, cnt: <span class="hljs-type">usize</span>, num: <span class="hljs-type">u8</span>)&#123;...&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="二、块缓存层（buffer-cache）"><a href="#二、块缓存层（buffer-cache）" class="headerlink" title="二、块缓存层（buffer cache）"></a>二、块缓存层（buffer cache）</h2><p>块缓存层的几个关键作用（其实原理与 CPU cache 一样）：</p>
+<ul>
+<li>减少磁盘 IO 操作：通过在内存中缓存最近或频繁访问的磁盘块来减少对磁盘的直接访问（因为内存访问速度远快于磁盘）。</li>
+<li>加速数据访问：应用请求数据时，操作系统先在缓存层查找，如果找到所需的数据块，就可以直接从内存中读取，而无需等待磁盘的慢速读取。</li>
+<li>合并写操作性：写操作先被写入到块缓存中，然后在稍后的某个时刻一起写入磁盘。这样可以将多个小的写操作小合并为一个大的磁盘 IO 操作，提高写入效率</li>
+<li>减少重复数据读取：如果多个应用或进程读取相同数据块，这些数据块只需要在磁盘内部读取依次，之后可以从块缓存中获取，减少重复的磁盘访问。</li>
+<li>提供一致性和同步机制：块缓存可以保证文件系统中数据的一致性，比如在崩溃恢复期间，可以帮助恢复未完成的写操作，确保文件系统的完整性<strong>（那如果突然断电了呢？）</strong>。</li>
+<li>支持异步写操作：数据可以先缓存在块缓存中，然后异步写入磁盘，这将允许程序继续执行而不必等待磁盘 IO 操作完成。（意思是内存这边自己执行，然后程序不用管，继续原有的操作）</li>
+<li>减轻磁盘的负载：通过减少对磁盘的访问次数，块缓存有助于降低磁盘的工作负载，延长其使用寿命。</li>
+</ul>
+<p>简而言之，言而总之，就是为了减少对磁盘的访问——因为它慢！</p>
+<p>NPUcore 中对于文件系统同样实现了buff cache层，主要定义于 <code>easy-fs/src/block_cache.rs</code> 中。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">Cache</span> &#123;<br>    <span class="hljs-comment">// 允许只读方式访问缓存，接受一个偏移量和一个闭包 f,闭包作用域缓存中的数据，并返回一个结果。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">read</span>&lt;T, V&gt;(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">usize</span>, f: <span class="hljs-keyword">impl</span> <span class="hljs-title class_">FnOnce</span>(&amp;T) <span class="hljs-punctuation">-&gt;</span> V) <span class="hljs-punctuation">-&gt;</span> V;<br>    <span class="hljs-comment">// 类似于read,但用于可变地修改缓存。也接受一个偏移量和一个闭包，但闭包可以修改数据。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">modify</span>&lt;T, V&gt;(&amp;<span class="hljs-keyword">mut</span> <span class="hljs-keyword">self</span>, offset: <span class="hljs-type">usize</span>, f: <span class="hljs-keyword">impl</span> <span class="hljs-title class_">FnOnce</span>(&amp;<span class="hljs-keyword">mut</span> T) <span class="hljs-punctuation">-&gt;</span> V) <span class="hljs-punctuation">-&gt;</span> V;<br>    <span class="hljs-comment">// 将缓存中的数据写回磁盘，接受一个块ID列表和一个指向块设备的引用。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">sync</span>(&amp;<span class="hljs-keyword">self</span>, _block_ids: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">usize</span>&gt;, _block_device: &amp;Arc&lt;<span class="hljs-keyword">dyn</span> BlockDevice&gt;)&#123;&#125;<br>&#125;<br><span class="hljs-comment">// 此处的 FnOnce是指该闭包只能被调用一次。</span><br></code></pre></td></tr></table></figure>
+
+<p>为了更好的管理缓存空间，需要实现一个 <code>CacheManager</code> 来对缓存进行管理。这样做可以统一管理不同类型的缓存，如块缓存和页表缓存。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">CacheManager</span> &#123;<br>    <span class="hljs-keyword">const</span> CACHE_SZ: <span class="hljs-type">usize</span>;<br>    <span class="hljs-keyword">type</span> <span class="hljs-title class_">CacheType</span>: Cache;<br>    <span class="hljs-comment">// 静态方法，用于创建一个新的缓存管理器实例</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">new</span>() <span class="hljs-punctuation">-&gt;</span> <span class="hljs-keyword">Self</span><br>    <span class="hljs-keyword">where</span><br>    	<span class="hljs-keyword">Self</span>: <span class="hljs-built_in">Sized</span>;<br>    <span class="hljs-comment">// 用于系统内存不足时，释放缓存，接受一个邻居闭包来获取块ID,以及一个指向块设备的引用。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">oom</span>&lt;FUNC&gt;(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        _neighbor: FUNC,<br>        _block_device: &amp;Arc&lt;<span class="hljs-keyword">dyn</span> BlockDevice&gt;<br>    ) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span><br>    <span class="hljs-keyword">where</span><br>    	FUNC: <span class="hljs-title function_ invoke__">Fn</span>(<span class="hljs-type">usize</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">usize</span>&gt;<br>    &#123;<br>        <span class="hljs-built_in">unreachable!</span>()<br>    &#125;<br>    <span class="hljs-comment">// 当文件大小变化时，通知缓存管理器释放一些缓存块。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">notify_new_size</span>(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        _new_size: <span class="hljs-type">usize</span><br>    ) &#123;<br>		<span class="hljs-built_in">unreachable!</span>()<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因为有块缓存和页缓存两种缓存块，所以如下对上述的<code>CacheManager</code> 进一步封装实现了 <code>BlockCacheManager</code> 以及 <code>PageCacheManager</code>。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">BlockCacheManager</span>: CacheManager &#123;<br>    <span class="hljs-comment">// 尝试获取传入参数 block_id (磁盘编号) 和 inner_cache_id (管理器内部编号)对应的Cache</span><br>	<span class="hljs-keyword">fn</span> <span class="hljs-title function_">try_get_block_cache</span>(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        block_id: <span class="hljs-type">usize</span>,<br>    ) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Option</span>&lt;Arc&lt;Mutex&lt;<span class="hljs-keyword">Self</span>::CacheType&gt;&gt;&gt;;<br>    <span class="hljs-comment">// 该函数获取传入参数 block_id (磁盘编号) 和 inner_cache_id (管理器内部编号)对应的 Cache , 如果内存中没有，则会通过 block_device 从块设备中读入对应内容。</span><br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_block_cache</span>&lt;FUNC&gt;(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        block_id: <span class="hljs-type">usize</span>,<br>        block_device: &amp;Arc&lt;<span class="hljs-keyword">dyn</span> BlockDevice&gt;,<br>    ) <span class="hljs-punctuation">-&gt;</span> Arc&lt;Mutex&lt;<span class="hljs-keyword">Self</span>::CacheType&gt;&gt;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">PageCacheManager</span>: CacheManager &#123;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">try_get_page_cache</span>(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        inner_cache_id: <span class="hljs-type">usize</span>,<br>    ) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Option</span>&lt;Arc&lt;Mutex&lt;<span class="hljs-keyword">Self</span>::CacheType&gt;&gt;&gt;;<br>    <span class="hljs-keyword">fn</span> <span class="hljs-title function_">get_page_cache</span>&lt;FUNC&gt;(<br>    	&amp;<span class="hljs-keyword">self</span>,<br>        inner_id: <span class="hljs-type">usize</span>,<br>        neighbor: FUNC,<br>        block_device: &amp;Arc&lt;<span class="hljs-keyword">dyn</span> BlockDevice&gt;,<br>    ) <span class="hljs-punctuation">-&gt;</span> Arc&lt;Mutex&lt;<span class="hljs-keyword">Self</span>::CacheType&gt;&gt;<br>    <span class="hljs-keyword">where</span><br>    	FUNC: <span class="hljs-title function_ invoke__">Fn</span>() <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">usize</span>&gt;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="三、索引节点层"><a href="#三、索引节点层" class="headerlink" title="三、索引节点层"></a>三、索引节点层</h2><p>文件系统的构成</p>
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241115132822809.png" srcset="/img/loading.gif" lazyload alt="image-20241115132822809"></p>
+<p>最开始是一个磁盘扇区组成的引导块。该部分的主要目的是用于对操作系统的引导。一般只在启动操作系统时使用。</p>
+<p>然后就是<strong>块组0</strong>，其最开始是<strong>超级块</strong>。</p>
+<p><strong>超级块（Super Block）</strong>：主要存放了<strong>该物理磁盘中文件系统结构的相关信息</strong>。并且对各个部分的大小进行说明。</p>
+<p><strong>inode 块位图（inode Bitmap）</strong>：记录了 <strong>inode</strong> 块中哪些块已被使用</p>
+<p><strong>data 块位图</strong> ：记录了<strong>data</strong> 块中那些块已被使用</p>
+<p>为了对超级块、inode 块和数据块三部分进行高效的管理，Linux 创建了几种不同的数据结构，分别是文件系统类型、inode、dentry（data entry）等几种。</p>
+<p>超级块反映了文件系统整体的控制信息。</p>
+<p>dentry 反映出某个文件系统在全局文件系统树中的位置。</p>
+<p>inode 反映了文件系统对象中的一般元数据信息。</p>
+<p><strong>inode</strong> 存放了文件元数据信息，并指向文件的内容，所以在 Linux 中，“ls -l” 实际就是使用了inode 的文件元数据。NPUcore中虽然使用了 fat32 文件系统，但在代码层面上同样引入了 inode这个概念，而服务于文件相关系统调用的索引节点层的代码在 <code>vfs.rs</code> 中。</p>
+<p>简单文件系统层实现了磁盘布局并能够将磁盘块有效的管理起来，但是对于文件系统的使用者而言，他们往往不关心磁盘布局是如何实现的（你想关心吗？），而是希望能够直接看到目录树结构中逻辑上的文件和目录（就是平时打开文件管理器时看到的那样），所以需要设计索引节点“<strong>Inode</strong>”，它屏蔽了简单文件系统层对磁盘的操作，让文件系统的使用者能够直接对文件和目录进行操作。代码如下所示：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">Inode</span> &#123;<br>    <span class="hljs-comment">// 该inode的读写锁</span><br>    inode_lock: RwLock&lt;InodeLock&gt;,<br>    <span class="hljs-comment">// 指向文件的内容</span><br>    file_content: RwLock&lt;FileContent&gt;,<br>    <span class="hljs-comment">// 指向管理该 inode 的 PageCacheManager</span><br>    file_cache_mgr: PageCacheManager,<br>    <span class="hljs-comment">// 文件类型</span><br>    file_type: Mutex&lt;DiskInodeType&gt;,<br>    <span class="hljs-comment">// 指向父目录的 inode 以及该 inode 在父目录的位置</span><br>    parent_dir: Mutex&lt;<span class="hljs-type">Option</span>&lt;(Arc&lt;<span class="hljs-keyword">Self</span>&gt;, <span class="hljs-type">u32</span>)&gt;&gt;,<br>    <span class="hljs-comment">// 指向该 inode 所属的简单文件系统</span><br>    fs: Arc&lt;EasyFileSystem&gt;,<br>    <span class="hljs-comment">// 该文件的相关时间属性</span><br>    time: Mutex&lt;InodeTime&gt;,<br>    <span class="hljs-comment">// 控制在该 inode 执行析构函数时是否释放文件内容的区域的标识</span><br>    deleted: Mutex&lt;<span class="hljs-type">bool</span>&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>通过上述这个 <strong>Inode</strong> 结构体，文件系统的使用者就可以对文件系统进行一些常用操作，如：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">// 创建目录项</span><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">create_dir_ent</span>(<br>	&amp;<span class="hljs-keyword">self</span>,<br>    inode_lock: &amp;RwLockWriteGuard&lt;InodeLock&gt;,<br>    short_ent: FATShortDirEnt,<br>    long_ents: <span class="hljs-type">Vec</span>&lt;FATLongDirEnt&gt;,<br>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;<span class="hljs-type">u32</span>, ()&gt;<br><br><span class="hljs-comment">// 删除目录项</span><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">delete_dir_ent</span>(<br>	&amp;<span class="hljs-keyword">self</span>,<br>    inode_lock: &amp;RwLockWriteGuard&lt;InodeLock&gt;,<br>    parent_dir: &amp;Arc&lt;<span class="hljs-keyword">Self</span>&gt;,<br>    parent_inode_lock: &amp;RwLockWriteGuard&lt;InodeLock&gt;,<br>    name: <span class="hljs-type">String</span>,<br>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), ()&gt;<br><br><span class="hljs-comment">// 删除硬链接（unlink）</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">unlink_lock</span>(<br>	&amp;<span class="hljs-keyword">self</span>,<br>    _inode_lock: &amp;RwLockWriteGuard&lt;InodeLock&gt;,<br>    delete: <span class="hljs-type">bool</span>,<br>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;(), <span class="hljs-type">isize</span>&gt;<br><br><span class="hljs-comment">// ls</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">ls_lock</span>(<br>	&amp;<span class="hljs-keyword">self</span>,<br>    inode_lock: &amp;RwLockWriteGuard&lt;InodeLock&gt;,<br>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">Result</span>&lt;<span class="hljs-type">Vec</span>&lt;(<span class="hljs-type">String</span>, FATShortDirEnt)&gt;, ()&gt;<br><br><span class="hljs-comment">// 获取文件时间相关信息</span><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">fn</span> <span class="hljs-title function_">time</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> MutexGuard&lt;InodeTime&gt;<br><br><span class="hljs-comment">// ...</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="四、目录和路径名"><a href="#四、目录和路径名" class="headerlink" title="四、目录和路径名"></a>四、目录和路径名</h2><h3 id="4-1-目录"><a href="#4-1-目录" class="headerlink" title="4.1 目录"></a>4.1 目录</h3><p>最早的文件系统没有现今的文件夹，只用文件名来标识文件，这种方法明显会带来管理上的麻烦。后来慢慢改变为使用按功能、按属性分类文件的方式，即将文件整理到不同层级的目录中，这样使得我们能够更轻松地定位所需文件（多级页表是不是也是这样的道理？）。</p>
+<p>在Linux下可以使用 <strong>stat</strong> 工具来获取一个文件或者目录的相关信息，这些信息包括目录的权限、所有者、大小以及创建时间等。实际上，<strong>stat</strong> 工具就是直接获取一个目录文件（或者其他类型文件）的 <strong>inode</strong> 来获取如上提到的这些信息。</p>
+<p>他有如下字段：</p>
+<ul>
+<li>File：文件的文件名</li>
+<li>Size：文件的字节大小</li>
+<li>Blocks：占据的块数</li>
+<li>IO Block：该操作系统一个块所占据的字节大小</li>
+<li>文件类型字段：根据获取到的文件类型信息打印</li>
+<li><code>Access: (xxxx/xxxxxxxxxx)</code> ：访问的权限</li>
+<li>Access：访问时间</li>
+<li>Modify：修改时间</li>
+<li>Uid &amp; Gid：用户id 和用户所在组id</li>
+<li>Device：如果文件是一个特殊文件，那么打印该特殊文件的 major&#x2F;minor ID</li>
+<li>Inode：该文件的底层编号，即用于索引的Inode节点</li>
+<li>Links：硬链接数，即一个文件的不同文件名的数量，当两个文件硬链接到一个Inode时（实际上硬链接就是新创建一个文件，这个文件与原有文件共享一个Inode，且这个文件的数据与原文件一模一样，或者说就是一个原文件的引用），对其中一个的改变都会作用到另一个上面。</li>
+</ul>
+<p>目录也是一种文件，它也有自己的Inode，其中保存着若干目录项（Dirent，Directory Entry）。根据它下面的子文件名和子目录名可以查询到子文件和子目录在文件系统中的底层编号（Inode）。</p>
+<h3 id="4-2-路径"><a href="#4-2-路径" class="headerlink" title="4.2 路径"></a>4.2 路径</h3><blockquote>
+<p>以下内容不考虑软链接！</p>
+</blockquote>
+<p>在有了目录之后，就可以将文件和目录组织为一种被称为目录树（Directory Tree）的有根树结构（在有了基层党组织结构后，顶层党组织就可以不直接对底层党员进行管辖，而是分由基层党组织进行管理，那么顶层组织就只需要对基层组织进行管理即可），这个目录就是党组织，目录树就是党组织结构。</p>
+<p>树中的每个节点都是一个文件或者目录，一个目录下面的所有的文件和子目录都是它的孩子。</p>
+<p>所以，所有非目录文件都是目录树的叶子节点。</p>
+<p>目录树的根节点就是一个目录，即我们日常所见的 “<strong>根目录</strong>”，也即“Root Directory”，在类Unix系统中，就是一个文件的绝对路径 <code>/xxx/xxx/.../xxfiile</code> 中的第一个 “<code>/</code>“。</p>
+<p>路径的分隔符也是 “<code>/</code>”。</p>
+<p><strong>相对路径</strong>和<strong>绝对路径</strong>太简单了，这里就不加描述了。</p>
+<p>在此，需要提出一个新的概念——<strong>CWD</strong>，</p>
+<p>即<strong>Current Working Directory</strong>，当前所在的工作目录，是一个绝对路径。</p>
+<p>每个进程都会记录自己的 CWD，当进程在索引文件或目录的时候，如果传给它的路径并未以“&#x2F;”开头，就会被内核认为是一个相对于进程当前工作目录的<strong>相对路径</strong>，这个路径会被拼接在CWD后面，组成一个<strong>绝对路径</strong>，实际上索引用的是这个绝对路径对应的文件或者目录。</p>
+<p>在文件系统的底层实现中，先将路径转化为一个文件或目录的Inode，再通过这个Inode具体索引文件或者目录。该过程是逐级进行的——对于绝对路径，先从根目录出发，每次根据当前目录Inode获取到信息，根据下一级子目录的目录名查到该子目录的底层编号，然后从该子目录继续向下遍历；对于相对路径，实际上就是绝对路径的过程中，跳过从根目录到当前目录的逐级遍历过程，直接从当前目录Inode获取信息，然后再如上述过程往下遍历。在这个过程中，目录的权限控制位会起到保护作用，阻止无权限的用户进行访问。</p>
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241115153834638.png" srcset="/img/loading.gif" lazyload alt="image-20241115153834638"></p>
+<h3 id="4-3-NPUcore中目录树的数据结构及具体实现"><a href="#4-3-NPUcore中目录树的数据结构及具体实现" class="headerlink" title="4.3 NPUcore中目录树的数据结构及具体实现"></a>4.3 NPUcore中目录树的数据结构及具体实现</h3><p><strong>NPUcore</strong> 中的这部分代码位于</p>
+<p><code>os/src/fs/directory_tree.rs</code></p>
+<p><img src="/home/xein/.config/Typora/typora-user-images/image-20241115162022627.png" srcset="/img/loading.gif" lazyload alt="image-20241115162022627"></p>
+<p>DirectoryTreeNode 的数据结构</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">DirectoryTreeNode</span> &#123;<br>    spe_usage: Mutex&lt;<span class="hljs-type">usize</span>&gt;,<br>    name: <span class="hljs-type">String</span>,<br>    filesystem: Arc&lt;FileSystem&gt;,<br>    file: Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;,<br>    selfptr: Mutex&lt;Weak&lt;<span class="hljs-keyword">Self</span>&gt;&gt;,<br>    father: Mutex&lt;Weak&lt;<span class="hljs-keyword">Self</span>&gt;&gt;,<br>    children: RwLock&lt;<span class="hljs-type">Option</span>&lt;BTreeMap&lt;<span class="hljs-type">String</span>, Arc&lt;<span class="hljs-keyword">Self</span>&gt;&gt;&gt;&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>OSInode 的数据结构</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">OSInode</span> &#123;<br>    readble: <span class="hljs-type">bool</span>,<br>    writable: <span class="hljs-type">bool</span>,<br>    special_use: <span class="hljs-type">bool</span>,<br>    append: <span class="hljs-type">bool</span>,<br>    inner: Arc&lt;InodeImpl&gt;,<br>    offset: Mutex&lt;<span class="hljs-type">usize</span>&gt;,<br>    dirnode_ptr: Arc&lt;Mutex&lt;Weak&lt;DirectoryTreeNode&gt;&gt;&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到这个<strong>OSInode</strong>实际上是对内部的<strong>InodeImpl</strong>进行了封装，而这个<strong>InodeImpl</strong>实际是定义于 <code>fat32/vfs.rs</code> 下的<strong>Inode</strong>数据结构</p>
+<p>在内核中全局定义了一个目录节点向量 <code>DIRECTORY_VEC</code>，记录当前系统所在的目录</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> DIRECTORY_VEC<br>	: Mutex&lt;(<span class="hljs-type">Vec</span>&lt;Weak&lt;DirectoryTreeNode&gt;&gt;, <span class="hljs-type">usize</span>)&gt; <br>	= Mutex::<span class="hljs-title function_ invoke__">new</span>((<span class="hljs-type">Vec</span>::<span class="hljs-title function_ invoke__">new</span>(), <span class="hljs-number">0</span>));<br></code></pre></td></tr></table></figure>
+
+<p>同时还记录了根目录节点 <code>ROOT</code>，其目录是<strong>空字符串</strong>（毕竟类Unix系统下，根目录不是“<code>/</code>”吗，前面是不是啥都没有？）</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">ref</span> ROOT: Arc&lt;DirectoryTreeNode&gt; = &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">inode</span> = DirectoryTreeNode::<span class="hljs-title function_ invoke__">new</span>(<br>    <span class="hljs-string">&quot;&quot;</span>.<span class="hljs-title function_ invoke__">to_string</span>(),<br>    Arc::<span class="hljs-title function_ invoke__">new</span>(FileSystem::<span class="hljs-title function_ invoke__">new</span>(FS::Fat32)),<br>    OSInode::<span class="hljs-title function_ invoke__">new</span>(InodeImpl::<span class="hljs-title function_ invoke__">root_inode</span>(&amp;FILE_SYSTEM)),<br>    Weak::<span class="hljs-title function_ invoke__">new</span>()<br>    );<br>    inode.<span class="hljs-title function_ invoke__">add_special_use</span>();<br>    inode,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在通过文件树寻找指定文件的过程中，首先会判断文件的路径前缀是否在路径缓存中，这样使大量文件操作效率更高，同时NPUcore也对一些默认路径进行了路径的转化。</p>
+<h3 id="4-4-文件描述符层"><a href="#4-4-文件描述符层" class="headerlink" title="4.4 文件描述符层"></a>4.4 文件描述符层</h3><h4 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h4><p><strong>文件描述符</strong>是进程访问文件的 <strong>接口</strong>，而 <strong>Inode</strong> 是文件在文件系统中的 <strong>描述符</strong>。具体来说：</p>
+<ul>
+<li>当一个文件被打开时，操作系统首先根据文件名查找文件的 Inode，然后为该进程分配一个文件描述符，并通过文件描述符来访问文件。</li>
+<li>文件描述符在进程的文件描述符表中，而 Inode 存储在文件系统的 Inode 表中。</li>
+</ul>
+<hr>
+<p>一个进程能访问多个文件，所以现在需要有一个结构，能够用于管理这个进程访问的多个文件。</p>
+<p>所以，<strong>文件描述符表（File Descriptor Table，简称 FDT）</strong> 诞生了。</p>
+<p>它包括了多个 <strong>文件描述符（File Descriptor，简称 FD）</strong>，每个<strong>FD</strong>代表了一个特定读写属性的IO资源。</p>
+<p>为了简化操作系统设计实现，可以让每个进程都带有一个线性的文件描述符表，记录该进程请求内核打开并读写的那些文件集合。每个<strong>文件描述符</strong>是一个非负整数，表示文件描述符表中一个打开的文件描述符所处的位置（可以理解为数组下标）。进程通过<strong>FD</strong>，可以在自身的<strong>FDT</strong>中找到对应的文件记录信息，从而也就找到对应文件，并对文件进行读写。</p>
+<p>当打开或创建一个文件的时候，一般情况下内核会返回给应用打开或创建的文件对应的<strong>FD</strong>；当应用想关闭一个文件的时候，也需要向内核提供<strong>FD</strong>，以完成对应文件相关资源的回收操作。</p>
+<p>OSInode要放到进程文件描述符表中，并将通过 sys_read&#x2F;write 系统调用进行读写，因此需要为其实现 <strong>File Trait</strong>，如下：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">readable</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>    <span class="hljs-keyword">self</span>.readable<br>&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">writable</span>(&amp;<span class="hljs-keyword">self</span>) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">bool</span> &#123;<br>    <span class="hljs-keyword">self</span>.writable<br>&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">read</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">usize</span>&gt;, buffer: &amp;<span class="hljs-keyword">mut</span> [<span class="hljs-type">u8</span>]) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span> &#123;<br>	<span class="hljs-keyword">match</span> offset &#123;<br>        <span class="hljs-title function_ invoke__">Some</span>(offset) =&gt; &#123;<br>            <span class="hljs-keyword">let</span> <span class="hljs-variable">len</span> = <br>            <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">read_at_block_cache</span>(*offset, buffer);<br>            *offset += len;<br>            len<br>        &#125;<br>        <span class="hljs-literal">None</span> =&gt; &#123;<br>            <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">offset</span> = <br>            <span class="hljs-keyword">self</span>.offset.<span class="hljs-title function_ invoke__">lock</span>();<br>            <span class="hljs-keyword">let</span> <span class="hljs-variable">len</span> = <br>            <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">read_at_block_cache</span>(*offset,<br>            buffer);<br>            *offset += len;<br>            len<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">write</span>(&amp;<span class="hljs-keyword">self</span>, offset: <span class="hljs-type">Option</span>&lt;&amp;<span class="hljs-keyword">mut</span> <span class="hljs-type">usize</span>&gt;, buffer: &amp;[<span class="hljs-type">u8</span>]) <span class="hljs-punctuation">-&gt;</span> <span class="hljs-type">usize</span> &#123;<br>    <span class="hljs-keyword">match</span> offset &#123;<br>        <span class="hljs-title function_ invoke__">Some</span>(offset) =&gt; &#123;<br>            <span class="hljs-keyword">let</span> <span class="hljs-variable">len</span> = <br>            <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">write_at_block_cache</span>(*offset, buffer);<br>            *offset += len;<br>            len<br>        &#125;<br>        <span class="hljs-literal">None</span> =&gt; &#123;<br>            <span class="hljs-keyword">let</span> <span class="hljs-keyword">mut </span><span class="hljs-variable">offset</span> = <br>            <span class="hljs-keyword">self</span>.offset.<span class="hljs-title function_ invoke__">lock</span>();<br>            <span class="hljs-keyword">let</span> <span class="hljs-variable">inode_lock</span> = <br>            <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">write</span>();<br>            <span class="hljs-keyword">if</span> <span class="hljs-keyword">self</span>.append &#123;<br>                *offset = <br>                <span class="hljs-keyword">self</span>.inner.<span class="hljs-title function_ invoke__">get_file_size_wlock</span>(&amp;inode_lock)<br>                <span class="hljs-keyword">as</span> <span class="hljs-type">usize</span>;<br>            &#125;<br>            <span class="hljs-keyword">let</span> <span class="hljs-variable">len</span> = <span class="hljs-keyword">self</span><br>            .inner<br>            .<span class="hljs-title function_ invoke__">write_at_block_cache_lock</span>(&amp;inode_lock,<br>            *offset, buffer);<br>            *offset += len;<br>            len<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>read 将数据从文件读取到参数提供的缓冲区中，offset参数是一个可选的usize可变引用，即允许指定开始读取的偏移量。</p>
+<p>write 将提供的缓冲区中的数据写入文件，与read类似。</p>
+<p>在NPUcore中，使用文件描述符表 <strong>Fdtable</strong> 来进行对文件描述符的管理，该数据结构定义于</p>
+<p><code>os/src/fs/poll.rs</code> 中</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FdTable</span> &#123;<br>    inner: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">Option</span>&lt;FileDesciptor&gt;&gt;,<br>    recycled: <span class="hljs-type">Vec</span>&lt;<span class="hljs-type">u8</span>&gt;,<br>    soft_limit: <span class="hljs-type">usize</span>,<br>    hard_limit: <span class="hljs-type">usize</span>,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以理解为 <strong>FDT</strong> 内部存在一个向量组，通过 <strong>open</strong> 等操作得到的 <strong>FD（非负整数）</strong>，对应的就是该数组的下标。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">pub</span> <span class="hljs-keyword">struct</span> <span class="hljs-title class_">FileDescriptor</span> &#123;<br>    cloexec: <span class="hljs-type">bool</span>,<br>    nonblock: <span class="hljs-type">bool</span>,<br>    <span class="hljs-keyword">pub</span> file: Arc&lt;<span class="hljs-keyword">dyn</span> File&gt;,<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因此，在一个进程中，活跃的文件被存储在 <strong>FDT</strong> 中。我们通过访问这个 <strong>FDT</strong> 获得所需的 <strong>FD</strong> ，进而定位并处理我们想要操作的特定文件。</p>
+<h3 id="4-4-文件系统相关调用"><a href="#4-4-文件系统相关调用" class="headerlink" title="4.4 文件系统相关调用"></a>4.4 文件系统相关调用</h3><h4 id="写在前面-1"><a href="#写在前面-1" class="headerlink" title="写在前面"></a>写在前面</h4><p>NPUcore 实现了许多POSIX规定的系统调用，本章主要介绍几个与文件相关的系统调用，包括文件的打开、关闭、读取和写入。</p>
+<h4 id="4-4-1-open-调用"><a href="#4-4-1-open-调用" class="headerlink" title="4.4.1 open 调用"></a>4.4.1 open 调用</h4><h4 id="4-4-2-close-调用"><a href="#4-4-2-close-调用" class="headerlink" title="4.4.2 close 调用"></a>4.4.2 close 调用</h4><h4 id="4-4-3-read-调用"><a href="#4-4-3-read-调用" class="headerlink" title="4.4.3 read 调用"></a>4.4.3 read 调用</h4><h4 id="4-4-4-write-调用"><a href="#4-4-4-write-调用" class="headerlink" title="4.4.4 write 调用"></a>4.4.4 write 调用</h4>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/" class="category-chain-item">NPUcore</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+        <a href="/tags/NPUcore/" class="print-no-link">#NPUcore</a>
+      
+        <a href="/tags/FileSystem/" class="print-no-link">#FileSystem</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>FS 文件系统部分</div>
+      <div>http://xjimlinx.github.io/2024/11/14/FS 文件系统部分/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Xein</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/11/15/Shell%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7%E6%8C%87%E5%8D%97/" title="Shell常用工具指南">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Shell常用工具指南</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/13/KDE%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" title="KDE使用技巧">
+                        <span class="hidden-mobile">KDE使用技巧</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
