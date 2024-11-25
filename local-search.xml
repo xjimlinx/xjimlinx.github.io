@@ -8,7 +8,7 @@
     <link href="/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Ext4%E5%8E%9F%E7%90%86/"/>
     <url>/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Ext4%E5%8E%9F%E7%90%86/</url>
     
-    <content type="html"><![CDATA[<h2 id="Ext4原理"><a href="#Ext4原理" class="headerlink" title="Ext4原理"></a>Ext4原理</h2><p><img src="/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Ext4%E5%8E%9F%E7%90%86/Linux_Tux.png"></p>]]></content>
+    <content type="html"><![CDATA[<h2 id="Ext4原理（要不改成FS原理？）"><a href="#Ext4原理（要不改成FS原理？）" class="headerlink" title="Ext4原理（要不改成FS原理？）"></a>Ext4原理（要不改成FS原理？）</h2><p><img src="/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Ext4%E5%8E%9F%E7%90%86/Linux_Tux.png"></p><h2 id="〇、写在之前"><a href="#〇、写在之前" class="headerlink" title="〇、写在之前"></a>〇、写在之前</h2><h3 id="0-1-一些写在文件系统之前的基本知识"><a href="#0-1-一些写在文件系统之前的基本知识" class="headerlink" title="0.1 一些写在文件系统之前的基本知识"></a>0.1 一些写在文件系统之前的基本知识</h3><p>在操作系统启动的时候，通过读取<strong>MBR</strong>或者<strong>GPT</strong>中的信息来获取磁盘上的分区信息（以及其他的信息），而不同的文件系统对应着不同的魔数（就是特别的用来与其他魔数相区分的数字），在读取<strong>MBR</strong>或<strong>GPT</strong>的时候就可以获取到各个分区的魔数信息，这个时候就可以知晓磁盘上的文件系统都是些什么。</p><p>在计算机启动的时候，如果磁盘是<strong>MBR</strong>分区，那么就需要主板支持<strong>BIOS</strong>（有时候也称<strong>Legacy</strong>）启动；如果是<strong>GPT</strong>分区，就需要支持<strong>UEFI</strong>启动</p><h4 id="BIOS"><a href="#BIOS" class="headerlink" title="BIOS"></a>BIOS</h4><p>即 <strong>Basic Input-Output System</strong> 基本输入输出系统</p><h4 id="UEFI"><a href="#UEFI" class="headerlink" title="UEFI"></a>UEFI</h4><h4 id="MBR"><a href="#MBR" class="headerlink" title="MBR"></a>MBR</h4><p>即 <strong>Master Boot Record</strong> 主引导记录</p><p>MBR分区大小为512B，以0x55aa结尾。</p><p>512B 包括： <strong>440</strong>代码区 + <strong>4</strong>选用磁盘标志 + <strong>2</strong>空值(0x00) + <strong>64</strong>标准MBR分区表规划 + <strong>2</strong>MBR有效标志(0x55aa)</p><p>MBR是比较老的方式，最多支持4个主分区，或者3个主分区+1个扩展分区，扩展分区可以包含多个逻辑分区</p><h4 id="GPT"><a href="#GPT" class="headerlink" title="GPT"></a>GPT</h4><p>即 <strong>Globally Unique Identifier Partition Table</strong> 全局唯一标识分区表，</p><p>也可以简写为 <strong>GUID Partition Table</strong>，是与UEFI相关的新磁盘布局。</p><p>GPT可以支持最多128个分区，并且分区可以识别的大小更大。</p><p>Linux下有多种文件系统可以使用</p><ul><li>Ext4</li><li>ZFS</li><li>XFS</li><li>Btrfs</li><li>f2fs</li><li>FAT32</li><li>exFAT</li><li>NTFS</li><li>…</li></ul><p>现在我们假设有一个已经分配好了的磁盘，磁盘的第一个分区是MBR分区，其中记录了这个磁盘上各个分区的相关信息，然后在这个MBR分区之后的第一个分区，被我们格式化成了Ext4分区，所以在这个分区中，磁盘被分成了多个块组。其中每个块组包含：</p><ul><li>第0个块——Superblock（超级块）：存储了整个文件系统的元信息，并且会在每一个块组的首部都复制一份</li><li></li></ul><p>在类Unix的文件系统中，每个文件都必须对应一个inode。</p><p>磁盘中有多少（或者说分区中）文件，就需要有多少inode</p><p>文件以索引结构来组织，也就是说，一个文件内部被拆成多份不连续的存在（称之为块），分散到不连续的零散的空间中。Unix文件系统为每个文件的所有块建立了一个索引表，也就是一个块地址数组。每个数组元素就是块的地址。</p><p>比方说，有一个文件A，包含有三个块，那么他的块地址数组就会存储三个元素，分别是这三个块所在的块地址。</p>]]></content>
     
     
     <categories>
@@ -69,6 +69,37 @@
   
   <entry>
     <title>Shell脚本笔记</title>
+    <link href="/2024/11/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Shell%E8%84%9A%E6%9C%AC%E7%AC%94%E8%AE%B0/"/>
+    <url>/2024/11/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Shell%E8%84%9A%E6%9C%AC%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Shell脚本笔记"><a href="#Shell脚本笔记" class="headerlink" title="Shell脚本笔记"></a>Shell脚本笔记</h1>]]></content>
+    
+    
+    <categories>
+      
+      <category>编程语言</category>
+      
+      <category>Shell</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>基础</tag>
+      
+      <tag>Shell</tag>
+      
+      <tag>Linux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Shell脚本笔记</title>
     <link href="/2024/11/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Shell/Shell%E8%84%9A%E6%9C%AC%E7%AC%94%E8%AE%B0/"/>
     <url>/2024/11/21/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Shell/Shell%E8%84%9A%E6%9C%AC%E7%AC%94%E8%AE%B0/</url>
     
@@ -88,9 +119,9 @@
       
       <tag>基础</tag>
       
-      <tag>Linux</tag>
-      
       <tag>Shell</tag>
+      
+      <tag>Linux</tag>
       
     </tags>
     
@@ -177,9 +208,9 @@
       
       <tag>基础</tag>
       
-      <tag>Linux</tag>
-      
       <tag>Shell</tag>
+      
+      <tag>Linux</tag>
       
     </tags>
     
