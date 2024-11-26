@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://xjimlinx.github.io/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Ext4%E5%8E%9F%E7%90%86/Linux_Tux.png">
 <meta property="article:published_time" content="2024-11-24T12:21:13.000Z">
-<meta property="article:modified_time" content="2024-11-25T20:36:51.183Z">
+<meta property="article:modified_time" content="2024-11-25T20:57:00.928Z">
 <meta property="article:author" content="Xein">
 <meta property="article:tag" content="操作系统">
 <meta property="article:tag" content="文件系统">
@@ -232,7 +232,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.3k 字
+          2.4k 字
         
       </span>
     
@@ -360,6 +360,7 @@
 <td>只有inode数据会被写入日志，但不控制文件何时写入；数据丢失风险高，但仍好于不用日志</td>
 </tr>
 </tbody></table>
+<p>可以看得出来，数据模式最安全，但是最慢。所有写入存储设备的数据都要写两次：第一次写入日志，第二次写入实际的存储设备。这样会导致性能低下</p>
 <h2 id="一、Linux（类Unix）下的文件系统"><a href="#一、Linux（类Unix）下的文件系统" class="headerlink" title="一、Linux（类Unix）下的文件系统"></a>一、Linux（类Unix）下的文件系统</h2><p>Linux下有多种文件系统可以使用</p>
 <ul>
 <li>Ext4</li>
@@ -541,6 +542,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2024/11/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/Hardware/Linux%20Pulse%E5%A3%B0%E5%8D%A1%E7%88%86%E9%9F%B3%E8%A7%A3%E5%86%B3/" title="Linux Pulse声卡爆音问题解决">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux Pulse声卡爆音问题解决</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">
