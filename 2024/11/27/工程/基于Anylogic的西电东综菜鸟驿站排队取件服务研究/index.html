@@ -1,0 +1,835 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/xein.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#1d1c2c">
+  <meta name="author" content="Xein">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="基于Anylogic的西电东综菜鸟驿站排队取件服务研究〇、参考文献&#x2F;网络资料[1] 徐雯. 基于Anylogic的校园菜鸟驿站排队取件服务研究——以南京财经大学为例[J]. 市场周刊，2022,35卷 2022年第4期 [2] 高显彩，单雪红，张丽慧. 银行服务中的排队模型[J]. 曲阜师范大学学报（自然科学版），2013,39（3）: 41-43. [3] 银行排队仿真模型-anylo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Anylogic的西电东综菜鸟驿站排队取件服务研究">
+<meta property="og:url" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/index.html">
+<meta property="og:site_name" content="XeinDeBlog">
+<meta property="og:description" content="基于Anylogic的西电东综菜鸟驿站排队取件服务研究〇、参考文献&#x2F;网络资料[1] 徐雯. 基于Anylogic的校园菜鸟驿站排队取件服务研究——以南京财经大学为例[J]. 市场周刊，2022,35卷 2022年第4期 [2] 高显彩，单雪红，张丽慧. 银行服务中的排队模型[J]. 曲阜师范大学学报（自然科学版），2013,39（3）: 41-43. [3] 银行排队仿真模型-anylo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/Anylogic%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B%E4%BB%BF%E7%9C%9F%E6%88%AA%E5%9B%BE.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E4%BC%98%E5%8C%96%E5%89%8D%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E4%BC%98%E5%8C%96%E5%89%8D%E5%8D%A0%E7%94%A8%E7%8E%87.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E5%B9%B3%E6%97%B6%E6%83%85%E5%86%B5.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E5%B9%B3%E6%97%B6%E7%BB%88%E7%AB%AF%E5%8D%A0%E7%94%A8%E7%8E%87.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E4%BC%98%E5%8C%96%E5%90%8E%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94%EF%BC%88%E5%A2%9E%E5%8A%A0%E8%87%B34%E5%8F%B0%E7%BB%88%E7%AB%AF%E5%90%8E%EF%BC%89.png">
+<meta property="og:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E8%BF%87%E5%BA%A6%E4%BC%98%E5%8C%96%E5%90%8E%E6%83%85%E5%86%B5.png">
+<meta property="article:published_time" content="2024-11-27T11:24:00.000Z">
+<meta property="article:modified_time" content="2024-11-27T18:24:51.486Z">
+<meta property="article:author" content="Xein">
+<meta property="article:tag" content="工程">
+<meta property="article:tag" content="仿真">
+<meta property="article:tag" content="Anylogic">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://xjimlinx.github.io/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/Anylogic%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B%E4%BB%BF%E7%9C%9F%E6%88%AA%E5%9B%BE.png">
+  
+  
+  
+  <title>基于Anylogic的西电东综菜鸟驿站排队取件服务研究 - XeinDeBlog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"xjimlinx.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>XeinDeBlog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/cyberpunk_black_lucy.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="基于Anylogic的西电东综菜鸟驿站排队取件服务研究"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Xein
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-27 19:24" pubdate>
+          2024-11-27 19:24
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          20 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">基于Anylogic的西电东综菜鸟驿站排队取件服务研究</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年11月28日 凌晨
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="基于Anylogic的西电东综菜鸟驿站排队取件服务研究"><a href="#基于Anylogic的西电东综菜鸟驿站排队取件服务研究" class="headerlink" title="基于Anylogic的西电东综菜鸟驿站排队取件服务研究"></a>基于Anylogic的西电东综菜鸟驿站排队取件服务研究</h1><h2 id="〇、参考文献-网络资料"><a href="#〇、参考文献-网络资料" class="headerlink" title="〇、参考文献&#x2F;网络资料"></a>〇、参考文献&#x2F;网络资料</h2><p>[1] 徐雯. 基于Anylogic的校园菜鸟驿站排队取件服务研究——以南京财经大学为例[J]. 市场周刊，2022,35卷 2022年第4期</p>
+<p>[2] 高显彩，单雪红，张丽慧. 银行服务中的排队模型[J]. 曲阜师范大学学报（自然科学版），2013,39（3）: 41-43.</p>
+<p>[3] <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1PYsJeJEpW">银行排队仿真模型-anylogic</a></p>
+<h2 id="一、选题动机"><a href="#一、选题动机" class="headerlink" title="一、选题动机"></a>一、选题动机</h2><p>随着电商行业的蓬勃发展，大学生群体成为快递消费的重要力量，校园快递量持续增长。尤其在“618”、“双11”等电商大促期间，西安电子科技大学东综菜鸟驿站的快递数量激增。然而，东综菜鸟驿站依赖自助取件终端提供服务，虽然效率较高，但在高峰时段，学生集中取件经常导致排队拥堵现象，再加上邮政以及京东的快递依次加入，使得拥堵的情况更加严重。这严重影响到了取件用户的体验。因此，本研究通过排队理论与<strong>AnyLogic</strong>仿真工具，分析东综菜鸟驿站自助取件系统的运作情况，探讨优化策略，以改善排队现象并提高服务效率。</p>
+<h2 id="二、场景分析"><a href="#二、场景分析" class="headerlink" title="二、场景分析"></a>二、场景分析</h2><h3 id="2-1-基本情况"><a href="#2-1-基本情况" class="headerlink" title="2.1. 基本情况"></a>2.1. <strong>基本情况</strong></h3><ul>
+<li><strong>东综菜鸟驿站</strong>位于校园主区域，服务学生及教职工。</li>
+<li>配备自助取件终端供客户自行操作，基本无人工服务（本研究不考虑人工服务）。</li>
+<li>服务时间：每日8:00至21:00，电商大促期间平均日到件量显著增加。</li>
+</ul>
+<h3 id="2-2-排队现象"><a href="#2-2-排队现象" class="headerlink" title="2.2. 排队现象"></a>2.2. <strong>排队现象</strong></h3><ul>
+<li>平时：非午餐晚餐时间排队现象较少，终端运行较为顺畅。</li>
+<li>高峰期：因快递量大、终端数量有限，出现长时间排队现象，影响用户体验。</li>
+</ul>
+<h3 id="2-3-挑战点"><a href="#2-3-挑战点" class="headerlink" title="2.3. 挑战点"></a>2.3. <strong>挑战点</strong></h3><ul>
+<li><strong>终端数量限制</strong>：现有自助终端难以满足高峰期需求。</li>
+<li><strong>队列长度</strong>：排队过长影响通行和取件体验。</li>
+<li><strong>扫码取走时间</strong>：有的老人扫一次码可能得扫上一段时间</li>
+<li><strong>货架取货时间</strong>：有的老人眼神不好得找一段时间</li>
+</ul>
+<h3 id="2-4-相关理论研究"><a href="#2-4-相关理论研究" class="headerlink" title="2.4. 相关理论研究"></a>2.4. 相关理论研究</h3><p>排队理论应用广泛，适用于大多数服务系统。依据参考文献《基于Anylogic的校园菜鸟驿站排队取件服务研究——以南京财经大学为例》一文，作者认为依据菜鸟驿站取件排队的特点，银行排队模型与前者较为相似，且叫号模式性能较传统有显著优势，因此采用M&#x2F;M&#x2F;n的排队模式。故本研究同样采用M&#x2F;M&#x2F;n排队模式。</p>
+<h3 id="2-5-研究工具"><a href="#2-5-研究工具" class="headerlink" title="2.5 研究工具"></a>2.5 研究工具</h3><h5 id="2-5-1-Anylogic仿真软件"><a href="#2-5-1-Anylogic仿真软件" class="headerlink" title="2.5.1 Anylogic仿真软件"></a>2.5.1 Anylogic仿真软件</h5><p>AnyLogic是一款专业的仿真建模软件，可支持离散事件、系统动力学和多智能体三种建模方法的结合，广泛应用于物流、交通、服务系统等领域。</p>
+<blockquote>
+<p>注：根据stackoverflow上老外的解释，Anylogic默认的时间平均使用的就是泊松分布，然后如果在里面写入的是指数分布的函数的话，实际上生成的是与泊松分布等价的，见<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/62405703/is-anylogics-arrival-rate-a-poisson-distribution">Is AnyLogic’s arrival rate a Poisson distribution?</a></p>
+</blockquote>
+<h5 id="2-5-2-排队理论"><a href="#2-5-2-排队理论" class="headerlink" title="2.5.2 排队理论"></a>2.5.2 排队理论</h5><p>排队理论是运筹学的重要分支，用于研究服务系统中的排队现象和资源配置效率。本研究中的应用如下：</p>
+<ol>
+<li><strong>模型选用</strong>：<ul>
+<li>采用<strong>M&#x2F;M&#x2F;n</strong>模型<ul>
+<li><strong>M&#x2F;M&#x2F;n</strong> 排队模型可以用以下符号表示：<ul>
+<li>M: 到达过程为<strong>泊松过程</strong> (Poisson process)，本研究内为客户到达速率服从泊松分布。</li>
+<li>M: 服务时间服从<strong>指数分布</strong> (Exponential distribution)，本研究内为客户使用机器时间（货架以及自助扫码终端）。</li>
+<li>n: 服务员数量 (Number of servers)，本研究中为自助扫码终端的数量。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>仿真过程中先设置5台货架，然后2台自助扫码终端，即n为2</li>
+</ul>
+</li>
+<li><strong>关键指标计算</strong>：<ul>
+<li><strong>平均队列长度</strong>：衡量驿站拥堵程度。</li>
+<li><strong>平均等待时间</strong>：反映客户体验。</li>
+</ul>
+</li>
+<li><strong>优化策略分析</strong>：<ul>
+<li>通过调整<strong>n</strong>的值（增加终端数量），仿真不同配置对系统性能的影响。</li>
+<li>错峰到达。</li>
+</ul>
+</li>
+</ol>
+<h2 id="三、仿真过程"><a href="#三、仿真过程" class="headerlink" title="三、仿真过程"></a>三、仿真过程</h2><ol start="0">
+<li><p>前提假设</p>
+<p> 取件排队在实际中会受到多重因素影响，所以在仿真之前，有必要先做一些合理的假设：</p>
+<ol>
+<li>假设每台机器工作效率一致</li>
+<li>假设每台机器不会出错</li>
+<li>先排队者先服务</li>
+<li>排队系统模型为M&#x2F;M&#x2F;n</li>
+<li>假设客户到达速率服从泊松分布，速率为X</li>
+<li>自助扫码终端的队伍长度设置限制为30（因为实际是两台机器，相当于一队有15人在排队）</li>
+<li>假设客户进入驿站时去每个货架拿去快递的概率是平均的</li>
+<li>假设客户不会因排队时间过长而离开</li>
+<li>假设客户只会使用自助取件，不会去找人工帮助</li>
+<li>假设客户只取一件商品</li>
+<li>假设客户都找得到自己要拿的快递（虽然现实中往往会有弱智拿走别人的快递甚至还撕开更有屌毛连还都不还，或者说送快递的送错地方、贴标签的贴错、卖家发错等等情况）</li>
+<li>机器数量为Z（仿真时设置为2）</li>
+<li>假设客户在货架上取件时间服从三角分布，<code>triangular( 5, 50, 20 )</code>，最短时间5秒，最长时间50秒，平均时间20秒</li>
+<li>假设客户在自助扫码终端的使用时间平均是5秒，服从指数分布</li>
+<li>假设高峰期（午后和晚餐时间）到达速率为X&#x3D;2，即1秒到达2人的泊松分布</li>
+<li>假设低峰期（上课时间）到达速率为X&#x3D;0.20，即5秒到达1人的泊松分布</li>
+</ol>
+<p> Anylogic内部仿真参数设置如下：</p>
+<table>
+<thead>
+<tr>
+<th>元素名称</th>
+<th>元素类型</th>
+<th>实际含义</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Person</td>
+<td>Source</td>
+<td>取件的客户</td>
+<td>到达速率服从泊松分布</td>
+</tr>
+<tr>
+<td>选择快递货架</td>
+<td>SelectOutput5</td>
+<td>客户选择货架</td>
+<td>客户的快递平均分布在每个货架上，也就是说选取任一货架的概率一样</td>
+</tr>
+<tr>
+<td>货架n</td>
+<td>Service</td>
+<td>n代表第几个货架，货架服务</td>
+<td>客户在货架的取件速率服从三角分布</td>
+</tr>
+<tr>
+<td>自助终端资源</td>
+<td>ResourcePool</td>
+<td>自助扫码终端数量</td>
+<td>Z&#x3D;2，与扫码取件自助终端进行绑定</td>
+</tr>
+<tr>
+<td>扫码取件自助终端</td>
+<td>Service</td>
+<td>客户选择取件终端进行扫码取件</td>
+<td>Z&#x3D;2，与扫码取件自助终端进行绑定</td>
+</tr>
+<tr>
+<td>离开驿站</td>
+<td>Sink</td>
+<td>客户取件完成，离开服务系统</td>
+<td></td>
+</tr>
+</tbody></table>
+<p> Anylogic内部仿真截图：</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/Anylogic%E5%86%85%E9%83%A8%E6%B5%81%E7%A8%8B%E4%BB%BF%E7%9C%9F%E6%88%AA%E5%9B%BE.png" srcset="/img/loading.gif" lazyload alt="Anylogic内部流程仿真截图"></p>
+</li>
+<li><p>建模基础</p>
+</li>
+</ol>
+<p>​		工具：使用AnyLogic的离散事件仿真功能。<br>​		模型类型：M&#x2F;M&#x2F;n排队模型。<br>​    	服务时间：每台终端的平均取件时间服从指数分布。<br>​    	服务台数：东综菜鸟驿站假设现有终端数量为2台。</p>
+<ol start="2">
+<li>模型场景设计</li>
+</ol>
+<p>​		模拟客户进入驿站排队，选择空闲的自助终端完成取件。</p>
+<p>​		设置高峰期和非高峰期不同的到达速率，体现真实情况。<br>​		记录以下关键指标：<br>​    	<strong>平均等待时间</strong><br><strong>​    	平均队列长度</strong><br><strong>​    	自助终端利用率</strong></p>
+<ol start="3">
+<li>场景优化</li>
+</ol>
+<p>​		添加不同数量的自助取件终端（如增加至8台或10台）并进行对比仿真。<br>​		设计多终端分区布局，减少队伍交叉影响。</p>
+<h2 id="四、结果分析"><a href="#四、结果分析" class="headerlink" title="四、结果分析"></a>四、结果分析</h2><ol>
+<li><p>现状仿真结果</p>
+<p> 高峰期图片：</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E4%BC%98%E5%8C%96%E5%89%8D%E6%83%85%E5%86%B5.png" srcset="/img/loading.gif" lazyload alt="高峰期优化前情况"></p>
+<p> 平均等待时间一直增加（因为现实不可能一直高峰，总会降下）</p>
+<p> 队列长度：在午后和晚间高峰，队列长度一直保持30人（排满状态）<br> 终端利用率：高峰期利用率接近93%，设备压力较大。</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E4%BC%98%E5%8C%96%E5%89%8D%E5%8D%A0%E7%94%A8%E7%8E%87.png" srcset="/img/loading.gif" lazyload alt="高峰期优化前占用率"></p>
+<p> 平时图片：</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E5%B9%B3%E6%97%B6%E6%83%85%E5%86%B5.png" srcset="/img/loading.gif" lazyload alt="平时情况"></p>
+<p> 平均等待时间稳定在31秒左右</p>
+<p> 队列长度：在午后和晚间高峰，队列长度不超过5人<br> 终端利用率：高峰期利用率接近58%。</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E5%B9%B3%E6%97%B6%E7%BB%88%E7%AB%AF%E5%8D%A0%E7%94%A8%E7%8E%87.png" srcset="/img/loading.gif" lazyload alt="平时终端占用率"></p>
+</li>
+<li><p>优化方案对比</p>
+<p> 增加终端数量：<br> 增至4台后，高峰期平均等待时间下降至3.1分钟，队列长度减少30%。<br> 如图所示，左侧为某次优化后前117名等待时间数据，右侧为优化前前116名等待时间数据</p>
+<p> 可以看到优化后显著减少了到达阻塞（即队伍长度开始锁死）的时间</p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E4%BC%98%E5%8C%96%E5%90%8E%E6%96%B9%E6%A1%88%E5%AF%B9%E6%AF%94%EF%BC%88%E5%A2%9E%E5%8A%A0%E8%87%B34%E5%8F%B0%E7%BB%88%E7%AB%AF%E5%90%8E%EF%BC%89.png" srcset="/img/loading.gif" lazyload alt="优化后方案对比（增加至4台终端后）">    增至8台后，直到服务了240多名用户，<strong>平均等待时间也不超过65秒</strong></p>
+<p> <img src="/2024/11/27/%E5%B7%A5%E7%A8%8B/%E5%9F%BA%E4%BA%8EAnylogic%E7%9A%84%E8%A5%BF%E7%94%B5%E4%B8%9C%E7%BB%BC%E8%8F%9C%E9%B8%9F%E9%A9%BF%E7%AB%99%E6%8E%92%E9%98%9F%E5%8F%96%E4%BB%B6%E6%9C%8D%E5%8A%A1%E7%A0%94%E7%A9%B6/%E9%AB%98%E5%B3%B0%E6%9C%9F%E8%BF%87%E5%BA%A6%E4%BC%98%E5%8C%96%E5%90%8E%E6%83%85%E5%86%B5.png" srcset="/img/loading.gif" lazyload alt="高峰期过度优化后情况"></p>
+</li>
+<li><p>结论</p>
+</li>
+</ol>
+<p>​	通过增加自助取件终端数量和错峰拿快递，可以有效缓解东综菜鸟驿站的排队现象，提高取件效率，为学生和教职工提供更便捷的服务体验。</p>
+<p>​	过度增加终端数量显然不大现实（终端与货架配比略显夸张），并且增加终端数量的收益远不如错峰拿快递。在别人上课的时候去拿快递而非在午饭时间或晚饭时间拿快递会使等待时间大大减少。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%B7%A5%E7%A8%8B/" class="category-chain-item">工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%B7%A5%E7%A8%8B/" class="print-no-link">#工程</a>
+      
+        <a href="/tags/%E4%BB%BF%E7%9C%9F/" class="print-no-link">#仿真</a>
+      
+        <a href="/tags/Anylogic/" class="print-no-link">#Anylogic</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>基于Anylogic的西电东综菜鸟驿站排队取件服务研究</div>
+      <div>http://xjimlinx.github.io/2024/11/27/工程/基于Anylogic的西电东综菜鸟驿站排队取件服务研究/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Xein</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/11/26/%E5%B7%A5%E7%A8%8B/%E8%AE%B0%E4%B8%80%E6%AC%A1Anylogic%E4%BB%BF%E7%9C%9F/" title="记一次Anylogic仿真">
+                        <span class="hidden-mobile">记一次Anylogic仿真</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
