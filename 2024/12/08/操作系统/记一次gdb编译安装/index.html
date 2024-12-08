@@ -19,26 +19,25 @@
   <meta name="author" content="Xein">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Linux Pulse声卡爆音问题的解决方案">
+    <meta name="description" content="为loongarch64架构编译gdb">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux Pulse声卡爆音问题解决">
-<meta property="og:url" content="http://xjimlinx.github.io/2024/11/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/Hardware/Linux%20Pulse%E5%A3%B0%E5%8D%A1%E7%88%86%E9%9F%B3%E8%A7%A3%E5%86%B3/index.html">
+<meta property="og:title" content="记一次gdb编译安装">
+<meta property="og:url" content="http://xjimlinx.github.io/2024/12/08/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%AE%B0%E4%B8%80%E6%AC%A1gdb%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85/index.html">
 <meta property="og:site_name" content="XeinDeBlog">
-<meta property="og:description" content="Linux Pulse声卡爆音问题的解决方案">
+<meta property="og:description" content="为loongarch64架构编译gdb">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-26T14:15:00.000Z">
-<meta property="article:modified_time" content="2024-11-26T14:30:36.887Z">
+<meta property="article:published_time" content="2024-12-08T05:00:00.000Z">
+<meta property="article:modified_time" content="2024-12-08T15:28:59.957Z">
 <meta property="article:author" content="Xein">
-<meta property="article:tag" content="Linux">
-<meta property="article:tag" content="操作系统">
-<meta property="article:tag" content="声卡">
-<meta property="article:tag" content="Pulse Audio">
-<meta property="article:tag" content="疑难杂症">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="基础">
+<meta property="article:tag" content="loongarch">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Linux Pulse声卡爆音问题解决 - XeinDeBlog</title>
+  <title>记一次gdb编译安装 - XeinDeBlog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Linux Pulse声卡爆音问题解决"></span>
+            <span id="subtitle" data-typed-text="记一次gdb编译安装"></span>
           
         </div>
 
@@ -220,8 +219,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-11-26 22:15" pubdate>
-          2024-11-26 22:15
+        <time datetime="2024-12-08 13:00" pubdate>
+          2024-12-08 13:00
         </time>
       </span>
     
@@ -232,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          419 字
+          327 字
         
       </span>
     
@@ -243,7 +242,7 @@
         
         
         
-          4 分钟
+          3 分钟
         
       </span>
     
@@ -280,12 +279,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Linux Pulse声卡爆音问题解决</h1>
+            <h1 id="seo-header">记一次gdb编译安装</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月26日 晚上
+                    本文最后更新于 2024年12月8日 晚上
                   
                 
               </p>
@@ -293,31 +292,35 @@
             
               <div class="markdown-body">
                 
-                <h1 id="Linux-Pulse声卡爆音问题解决"><a href="#Linux-Pulse声卡爆音问题解决" class="headerlink" title="Linux Pulse声卡爆音问题解决"></a>Linux Pulse声卡爆音问题解决</h1><p>参考来源：</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://www.mrguarder.com/2023/07/Fix-Linux-Audio-Popping-Noise.html">解決 Linux 奇怪的爆音 (Pop Noise) 現象</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.mrguarder.com/">流浪猫的猫窝–博主主站</a></li>
-</ul>
-<p>前段时间鸡哥（装的Arch）用着好好的不知道为啥突然就声卡爆音了，并且只有左侧爆音，然后上网搜索半天无果遂放弃，以为是硬件的问题拆开了后盖发现左侧扬声器好像也没有太大问题，快放弃的时候发现打开的网页里面还有一个没有看，博主叫流浪猫，好像是湾湾，按着博主的教程设置好后就解决爆音问题了。</p>
-<p><strong>原博主的文章对爆音原因的解释：</strong></p>
-<blockquote>
-<p>這個問題不只是 Linux，連 Windows 也會出現這樣的情況。就是在開機音樂載入前，耳機或喇叭會出現『波』或『趴』的刺耳噪音，甚至連聽音樂或看影片也會出現這種爆音。雖然不至於影響日常工作，但長久下來也是很惱人。</p>
-<p>根據 Linux 相關論壇的高手解釋，這種瞬間脈衝『POP』爆裂聲，來自 Pulse Audio 音效管理裝置。</p>
-<p>它會在沒有聲音輸出 (如：影片或音樂) 狀態的十秒後，讓音效管理裝置自動進入休眠。因此當系統開始有聲音輸出時，它會出現這種短暫的提示，讓使用者知道音效管理裝置已經啟動。</p>
-</blockquote>
-<p>首先进入Pulse Audio文件夹</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> /etc/pulse<br></code></pre></td></tr></table></figure>
+                <h1 id="记一次-gdb-for-loongarch-编译安装"><a href="#记一次-gdb-for-loongarch-编译安装" class="headerlink" title="记一次 gdb for loongarch 编译安装"></a>记一次 gdb for loongarch 编译安装</h1><p>首先是下载gdb的源码，以下是官方网址</p>
+<p><a target="_blank" rel="noopener" href="http://ftp.gnu.org/gnu/gdb/">http://ftp.gnu.org/gnu/gdb/</a></p>
+<p>也可通过命令行直接用<code>wget</code>下载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">wget http://ftp.gnu.org/gnu/gdb/gdb-15.2.tar.xz<br></code></pre></td></tr></table></figure>
 
-<p>然后打开默认的音效设定</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> vim default.pa<br></code></pre></td></tr></table></figure>
+<p>然后解压源码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">tar xvf gdb-15.2.tar.xz <br></code></pre></td></tr></table></figure>
 
-<p>然后找到 <code>load-module module-suspend-on-idle</code> 并注释</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># load-module module-suspend-on-idle</span><br></code></pre></td></tr></table></figure>
+<p>配置编译选项</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> gdb-15.2<br><span class="hljs-built_in">mkdir</span> build<br><span class="hljs-built_in">cd</span> build<br>../configure --prefix=/opt/loongarch64-unknown-linux-gnu-15.2 --target=loongarch64-unknown-linux-gnu<br></code></pre></td></tr></table></figure>
 
-<p>保存退出后重启Pulse Audio</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">pulseaudio -k<br></code></pre></td></tr></table></figure>
+<p>注意<code>/opt/loongarch64-unknown-linux-gnu-15.2</code> 可以更改为你想要的位置</p>
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">make -j16<br></code></pre></td></tr></table></figure>
 
-<p>结束啦，爆音没啦！</p>
+<p>安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> make install -j16<br></code></pre></td></tr></table></figure>
+
+<p>安装完成目录结构如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs bash">/opt/loongarch64-unknown-linux-gnu-15.2<br>├── bin<br>├── include<br>│   ├── gdb<br>│   └── sim<br>├── lib<br>└── share<br>    ├── gdb<br>    │   ├── guile<br>    │   │   └── gdb<br>    │   ├── python<br>    │   │   └── gdb<br>    │   │       ├── <span class="hljs-built_in">command</span><br>    │   │       ├── dap<br>    │   │       ├── <span class="hljs-keyword">function</span><br>    │   │       └── printer<br>    │   ├── syscalls<br>    │   └── system-gdbinit<br>    ├── info<br>    ├── locale<br>    │   ├── da<br>    │   │   └── LC_MESSAGES<br>    │   ├── de<br>    │   │   └── LC_MESSAGES<br>    │   ├── es<br>    │   │   └── LC_MESSAGES<br>    │   ├── <span class="hljs-keyword">fi</span><br>    │   │   └── LC_MESSAGES<br>    │   ├── fr<br>    │   │   └── LC_MESSAGES<br>    │   ├── ga<br>    │   │   └── LC_MESSAGES<br>    │   ├── hr<br>    │   │   └── LC_MESSAGES<br>    │   ├── <span class="hljs-built_in">id</span><br>    │   │   └── LC_MESSAGES<br>    │   ├── it<br>    │   │   └── LC_MESSAGES<br>    │   ├── ja<br>    │   │   └── LC_MESSAGES<br>    │   ├── ka<br>    │   │   └── LC_MESSAGES<br>    │   ├── <span class="hljs-built_in">nl</span><br>    │   │   └── LC_MESSAGES<br>    │   ├── pt<br>    │   │   └── LC_MESSAGES<br>    │   ├── pt_BR<br>    │   │   └── LC_MESSAGES<br>    │   ├── ro<br>    │   │   └── LC_MESSAGES<br>    │   ├── ru<br>    │   │   └── LC_MESSAGES<br>    │   ├── rw<br>    │   │   └── LC_MESSAGES<br>    │   ├── sr<br>    │   │   └── LC_MESSAGES<br>    │   ├── sv<br>    │   │   └── LC_MESSAGES<br>    │   ├── <span class="hljs-built_in">tr</span><br>    │   │   └── LC_MESSAGES<br>    │   ├── uk<br>    │   │   └── LC_MESSAGES<br>    │   ├── vi<br>    │   │   └── LC_MESSAGES<br>    │   └── zh_CN<br>    │       └── LC_MESSAGES<br>    └── man<br>        ├── man1<br>        └── man5<br></code></pre></td></tr></table></figure>
+
+<p>给bash或者zsh添加PATH：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-comment"># add LoongArch gdb</span><br><span class="hljs-built_in">export</span> PATH=/opt/loongarch64-unknown-linux-gnu-15.2/bin:<span class="hljs-variable">$PATH</span><br></code></pre></td></tr></table></figure>
+
+<p>然后重启终端或者<code>source</code>一下配置文件，再执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">loongarch64-unknown-linux-gnu-gdb<br></code></pre></td></tr></table></figure>
+
+<p>可以看到有如下提示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs bash">GNU gdb (GDB) 15.2<br>Copyright (C) 2024 Free Software Foundation, Inc.<br>License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;<br>This is free software: you are free to change and redistribute it.<br>There is NO WARRANTY, to the extent permitted by law.<br>Type <span class="hljs-string">&quot;show copying&quot;</span> and <span class="hljs-string">&quot;show warranty&quot;</span> <span class="hljs-keyword">for</span> details.<br>This GDB was configured as <span class="hljs-string">&quot;--host=x86_64-pc-linux-gnu --target=loongarch64-unknown-linux-gnu&quot;</span>.<br>Type <span class="hljs-string">&quot;show configuration&quot;</span> <span class="hljs-keyword">for</span> configuration details.<br>For bug reporting instructions, please see:<br>&lt;https://www.gnu.org/software/gdb/bugs/&gt;.<br>Find the GDB manual and other documentation resources online at:<br>    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.<br><br>For <span class="hljs-built_in">help</span>, <span class="hljs-built_in">type</span> <span class="hljs-string">&quot;help&quot;</span>.<br>Type <span class="hljs-string">&quot;apropos word&quot;</span> to search <span class="hljs-keyword">for</span> commands related to <span class="hljs-string">&quot;word&quot;</span>.<br>(gdb) <br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -339,20 +342,6 @@
   <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="category-chain-item">操作系统</a>
   
   
-    <span>></span>
-    
-  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/" class="category-chain-item">Linux</a>
-  
-  
-    <span>></span>
-    
-  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/Linux/Hardware/" class="category-chain-item">Hardware</a>
-  
-  
-
-  
-
-  
 
       </span>
     
@@ -365,15 +354,13 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
       
-        <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="print-no-link">#操作系统</a>
+        <a href="/tags/%E7%AC%94%E8%AE%B0/" class="print-no-link">#笔记</a>
       
-        <a href="/tags/%E5%A3%B0%E5%8D%A1/" class="print-no-link">#声卡</a>
+        <a href="/tags/%E5%9F%BA%E7%A1%80/" class="print-no-link">#基础</a>
       
-        <a href="/tags/Pulse-Audio/" class="print-no-link">#Pulse Audio</a>
-      
-        <a href="/tags/%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" class="print-no-link">#疑难杂症</a>
+        <a href="/tags/loongarch/" class="print-no-link">#loongarch</a>
       
     </div>
   
@@ -385,8 +372,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Linux Pulse声卡爆音问题解决</div>
-      <div>http://xjimlinx.github.io/2024/11/26/操作系统/Linux/Hardware/Linux Pulse声卡爆音解决/</div>
+      <div>记一次gdb编译安装</div>
+      <div>http://xjimlinx.github.io/2024/12/08/操作系统/记一次gdb编译安装/</div>
     </div>
     <div class="license-meta">
       
@@ -398,7 +385,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2024年11月26日</div>
+          <div>2024年12月8日</div>
         </div>
       
       
@@ -430,18 +417,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/11/26/%E5%B7%A5%E7%A8%8B/%E8%AE%B0%E4%B8%80%E6%AC%A1Anylogic%E4%BB%BF%E7%9C%9F/" title="记一次Anylogic仿真">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">记一次Anylogic仿真</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/11/24/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E4%B8%8EExt4%E5%8E%9F%E7%90%86/" title="Linux文件系统与Ext4原理">
-                        <span class="hidden-mobile">Linux文件系统与Ext4原理</span>
+                      <a href="/2024/12/08/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%8A%80%E6%9C%AF/Rust%E5%BA%94%E7%94%A8/" title="Rust应用">
+                        <span class="hidden-mobile">Rust应用</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
