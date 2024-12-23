@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://xjimlinx.github.io/2024/10/09/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/Rust/dancing-ferris.gif">
 <meta property="og:image" content="https://pica.zhimg.com/80/v2-0d848e960f3279999eab4b1317f6538e_1440w.png">
 <meta property="article:published_time" content="2024-10-09T07:50:57.000Z">
-<meta property="article:modified_time" content="2024-11-24T13:04:22.752Z">
+<meta property="article:modified_time" content="2024-12-14T18:40:48.394Z">
 <meta property="article:author" content="Xein">
 <meta property="article:tag" content="基础">
 <meta property="article:tag" content="编程">
@@ -233,7 +233,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          19k 字
+          20k 字
         
       </span>
     
@@ -244,7 +244,7 @@
         
         
         
-          162 分钟
+          164 分钟
         
       </span>
     
@@ -286,7 +286,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月24日 晚上
+                    本文最后更新于 2024年12月15日 凌晨
                   
                 
               </p>
@@ -1413,7 +1413,14 @@
 <h3 id="♾️-一些比较有意思的题目"><a href="#♾️-一些比较有意思的题目" class="headerlink" title="♾️.一些比较有意思的题目"></a>♾️.一些比较有意思的题目</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-meta">#![allow(incomplete_features)]</span><br><span class="hljs-meta">#![feature(generic_const_exprs)]</span><br><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">check_size</span>&lt;T&gt;(val: T)<br><span class="hljs-comment">// 此处会检查 where 后面的表达式，即Assert&lt;xxx&gt;是否实现了 IsTrue 特征，而最下面的代码IsTrue只为Assert&lt;true&gt;实现了特征，也就是说，当内部表达式为false时，编译器会报错也即size_of&lt;T&gt; &gt;= 768时，会报错</span><br><span class="hljs-comment">// 由最下方Assert的枚举实现代码可知，Assert 接收一个常量 bool 值</span><br><span class="hljs-keyword">where</span><br>    Assert&lt;&#123; core::mem::size_of::&lt;T&gt;() &lt; <span class="hljs-number">768</span> &#125;&gt;: IsTrue,<br>&#123;<br>    <span class="hljs-comment">//...</span><br>&#125;<br><br><span class="hljs-comment">// fix the errors in main</span><br><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() &#123;<br>    <span class="hljs-title function_ invoke__">check_size</span>([<span class="hljs-number">0u8</span>; <span class="hljs-number">767</span>]); <br>    <span class="hljs-title function_ invoke__">check_size</span>([<span class="hljs-number">0i32</span>; <span class="hljs-number">191</span>]);<br>    <span class="hljs-title function_ invoke__">check_size</span>([<span class="hljs-string">&quot;hello你好&quot;</span>; <span class="hljs-number">47</span>]); <span class="hljs-comment">// &amp;str is a string reference, containing a pointer and string length in it, so it takes two word long, in x86-64, 1 word = 8 bytes</span><br>    <span class="hljs-title function_ invoke__">check_size</span>([(); <span class="hljs-number">31</span>].<span class="hljs-title function_ invoke__">map</span>(|_| <span class="hljs-string">&quot;hello你好&quot;</span>.<span class="hljs-title function_ invoke__">to_string</span>()));  <span class="hljs-comment">// String is a smart pointer struct, it has three fields: pointer, length and capacity, each takes 8 bytes</span><br>    <span class="hljs-title function_ invoke__">check_size</span>([<span class="hljs-string">&#x27;中&#x27;</span>; <span class="hljs-number">191</span>]); <span class="hljs-comment">// A char takes 4 bytes in Rust</span><br>&#125;<br><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">enum</span> <span class="hljs-title class_">Assert</span>&lt;<span class="hljs-keyword">const</span> CHECK: <span class="hljs-type">bool</span>&gt; &#123;&#125;<br><br><span class="hljs-keyword">pub</span> <span class="hljs-keyword">trait</span> <span class="hljs-title class_">IsTrue</span> &#123;&#125;<br><br><span class="hljs-keyword">impl</span> <span class="hljs-title class_">IsTrue</span> <span class="hljs-keyword">for</span> <span class="hljs-title class_">Assert</span>&lt;<span class="hljs-literal">true</span>&gt; &#123;&#125;<br></code></pre></td></tr></table></figure>
 
 <hr>
-<h2 id="一、进阶"><a href="#一、进阶" class="headerlink" title="一、进阶"></a>一、进阶</h2><h3 id="Arc"><a href="#Arc" class="headerlink" title="Arc"></a>Arc</h3><p><code>Arc</code>：用于在多个线程间共享数据，确保数据的引用计数是线程安全的，但不提供修改数据的能力。</p>
+<h2 id="一、进阶"><a href="#一、进阶" class="headerlink" title="一、进阶"></a>一、进阶</h2><h3 id="1-闭包-Closure"><a href="#1-闭包-Closure" class="headerlink" title="1.闭包 Closure"></a>1.闭包 Closure</h3><p>这里首先介绍一下匿名函数的概念。</p>
+<h4 id="1-1-匿名函数"><a href="#1-1-匿名函数" class="headerlink" title="1.1 匿名函数"></a>1.1 匿名函数</h4><p>即 Anonymous Function，是一种没有名称的函数，通常用于定义一次性或者短期使用的函数。在Rust中的体现就是闭包。就比方说在一个编程语言中，直接通过不写函数名或者类似在<code>javascript</code>中使用同一个名称<code>function</code>，然后带有一个返回表达式以及函数签名的式子，或许用下面Rust的闭包实例来看会比较好理解。</p>
+<h4 id="1-2-闭包"><a href="#1-2-闭包" class="headerlink" title="1.2 闭包"></a>1.2 闭包</h4><p><strong>闭包</strong>最早由上世纪60年代的<code>Scheme</code>语言引进，然后后面的大多数语言也渐渐把闭包作为核心特性了。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-keyword">fn</span> <span class="hljs-title function_">main</span>() &#123;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">x</span> = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">let</span> <span class="hljs-variable">sum</span> = |y| x + y;<br>    <span class="hljs-comment">// &quot;||&quot; 内部就是就是要接受的参数值，后面的表达式就是要返回的表达式</span><br>    <br>    <span class="hljs-built_in">assert_eq!</span>(<span class="hljs-number">3</span>, <span class="hljs-title function_ invoke__">sum</span>(<span class="hljs-number">2</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Arc"><a href="#Arc" class="headerlink" title="Arc"></a>Arc</h3><p><code>Arc</code>：用于在多个线程间共享数据，确保数据的引用计数是线程安全的，但不提供修改数据的能力。</p>
 <h3 id="Mutex"><a href="#Mutex" class="headerlink" title="Mutex"></a>Mutex</h3><p><code>Mutex</code>：用于确保多个线程对同一数据的访问是互斥的，确保同一时刻只有一个线程能修改数据。</p>
 <h3 id="RwLock-vs-Mutex-的区别"><a href="#RwLock-vs-Mutex-的区别" class="headerlink" title="RwLock vs Mutex 的区别"></a><code>RwLock</code> vs <code>Mutex</code> 的区别</h3><ol>
 <li><strong>锁的类型</strong>：<ul>

@@ -26,16 +26,13 @@
 <meta property="og:site_name" content="XeinDeBlog">
 <meta property="og:description" content="NPUcore-LA 的笔记">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://xjimlinx.github.io/2024/11/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/FS%20of%20NPUcore-LA/image-rtree-print-fs.png">
-<meta property="og:image" content="http://xjimlinx.github.io/2024/11/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/FS%20of%20NPUcore-LA/image-rtree-print-ext4.png">
 <meta property="article:published_time" content="2024-11-10T03:24:51.000Z">
-<meta property="article:modified_time" content="2024-11-24T12:33:08.390Z">
+<meta property="article:modified_time" content="2024-12-14T16:43:48.878Z">
 <meta property="article:author" content="Xein">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="NPUcore">
 <meta property="article:tag" content="FileSystem">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://xjimlinx.github.io/2024/11/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/FS%20of%20NPUcore-LA/image-rtree-print-fs.png">
   
   
   
@@ -233,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.8k 字
+          7.8k 字
         
       </span>
     
@@ -244,7 +241,7 @@
         
         
         
-          57 分钟
+          65 分钟
         
       </span>
     
@@ -286,7 +283,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年11月24日 晚上
+                    本文最后更新于 2024年12月15日 凌晨
                   
                 
               </p>
@@ -295,19 +292,17 @@
               <div class="markdown-body">
                 
                 <h1 id="FS-of-NPUcore-LA"><a href="#FS-of-NPUcore-LA" class="headerlink" title="FS of NPUcore-LA"></a>FS of NPUcore-LA</h1><h2 id="〇、概览"><a href="#〇、概览" class="headerlink" title="〇、概览"></a>〇、概览</h2><p>先使用 <a target="_blank" rel="noopener" href="https://github.com/xjimlinx/rtree">rtree</a> (我自己用gpt帮助写的用rust实现的tree简化版)看一下大概</p>
-<img src="/2024/11/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/FS%20of%20NPUcore-LA/image-rtree-print-fs.png" srcset="/img/loading.gif" lazyload class="" title="rtree 打印效果">
-
+<p>![image-rtree-print-fs](FS of NPUcore-LA&#x2F;image-rtree-print-fs.png)</p>
 <p>可以看到有fs根目录下有三个文件夹，分别是：</p>
 <ul>
-<li><strong>dev</strong> ：还不知道放什么的代码（2024&#x2F;11&#x2F;10）</li>
+<li><strong>dev</strong> ：放各种特殊设备的代码</li>
 <li><strong>fat32</strong> ：放有 fat32 相关的代码</li>
 <li><strong>ext4</strong>（我自己加的）</li>
 </ul>
 <p>所以依葫芦画瓢，现在ext4下面创建如下结构，后面再慢慢改</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs rust">src/fs/ext4<br>├── bitmap.rs       # 位图操作，用于跟踪已分配/未分配的块<br>├── dir_iter.rs     # 目录迭代器，用于遍历目录项<br>├── inode.rs        # 管理inode数据结构，这是EXT4文件系统中的核心<br>├── layout.rs       # 定义EXT4文件系统在磁盘上的布局<br>├── <span class="hljs-keyword">mod</span>.rs          # 模块入口，负责初始化EXT4文件系统支持<br>└── vfs.rs          # 虚拟文件系统接口，将EXT4特定的实现与VFS层对接<br></code></pre></td></tr></table></figure>
 
-<img src="/2024/11/10/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/NPUcore/FS%20of%20NPUcore-LA/image-rtree-print-ext4.png" srcset="/img/loading.gif" lazyload class="" title="rtree 打印效果">
-
+<p>![image-rtree-print-ext4.png](FS of NPUcore-LA&#x2F;image-rtree-print-ext4.png)</p>
 <hr>
 <h2 id="一、FS-根文件"><a href="#一、FS-根文件" class="headerlink" title="一、FS 根文件"></a>一、FS 根文件</h2><p>然后我们现在先从 <code>fs</code> 文件夹下面看看纯文件</p>
 <p>![image-rtree-print-fs-fileonly](FS of NPUcore-LA&#x2F;image-rtree-print-fs-fileonly.png)</p>
@@ -627,15 +622,28 @@
 </ul>
 <hr>
 <h3 id="1-8-fs-cache-rs"><a href="#1-8-fs-cache-rs" class="headerlink" title="1.8 fs&#x2F;cache.rs"></a>1.8 fs&#x2F;cache.rs</h3><hr>
+<h2 id="二、NPUcore-LA-ext4所作的修改（增量）"><a href="#二、NPUcore-LA-ext4所作的修改（增量）" class="headerlink" title="二、NPUcore-LA-ext4所作的修改（增量）"></a>二、NPUcore-LA-ext4所作的修改（增量）</h2><p>先展示一下目前fs下的目录树情况</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs bash">.<br>├── cache.rs<br>├── dev						-- 特殊设备<br>│   ├── hwclock.rs			-- 未实现的时钟<br>│   ├── mod.rs<br>│   ├── null.rs				-- 空设备<br>│   ├── pipe.rs				-- 管道设备<br>│   ├── socket.rs			-- 套接字设备<br>│   ├── tty.rs				-- 虚拟控制台（终端设备）<br>│   └── zero.rs				-- 零设备（零生成器）<br>├── directory_tree.rs		-- NPUcore 目录树结点<br>├── dirent.rs				-- Linux 原生目录项<br>├── ext4					-- 还未实现的ext4支持<br>│   ├── bitmap.rs			-- TODO<br>│   ├── block.rs			-- TODO<br>│   ├── block_group.rs		-- TODO<br>│   ├── dir_iter.rs			-- TODO<br>│   ├── efs.rs				-- TODO<br>│   ├── ext4_inode.rs		-- TODO<br>│   ├── file.rs				-- TODO<br>│   ├── layout.rs<br>│   ├── mod.rs<br>│   └── superblock.rs		-- 超级块<br>├── fat32					-- fat32 支持<br>│   ├── bitmap.rs			-- fat32 位图<br>│   ├── dir_iter.rs			-- 目录迭代函数<br>│   ├── efs.rs				-- 在EFS基础上修改以实现对fat32的支持<br>│   ├── fat_inode.rs		-- fat32 的虚拟inod以及filecontent<br>│   ├── file.rs				-- TODO<br>│   ├── layout.rs			-- fat32 的目录项以及BPB、文件系统信息结构体等<br>│   └── mod.rs<br>├── file_descriptor.rs		-- 文件描述符<br>├── file_trait.rs			-- file trait<br>├── filesystem.rs			-- 文件系统定义<br>├── inode.rs				-- OSInode 所在位置<br>├── layout.rs				-- 包含几个文件相关的标志位组定义<br>├── mod.rs					-- 包含根文件夹的文件描述符<br>├── poll.rs					-- 复用<br>├── swap.rs					-- 交换空间<br>└── vfs.rs					-- VFS实现（尚未完成）<br></code></pre></td></tr></table></figure>
+
+<p>然后是VFS调用情况</p>
+<p>![VFS of NPUcore-LA-ext4](FS of NPUcore-LA&#x2F;VFS of NPUcore-LA-ext4.png)</p>
+<p>其中<code>OSInode</code>实现了<code>File</code>特征，<code>Inode</code>属于<code>fat32</code>模块，经过一番改动后，抽象成了<code>InodeTrait</code>，在<code>OSInode</code>内部有一个<code>inner</code>字段，该字段由<code>Inode</code>类型转为实现<code>InodeTrait</code>特征的动态分发对象。</p>
+<p>然后在Fat32中，因为文件是由一个簇索引链表来记录的，所以<code>fat32::Inode</code>内部的<code>file_content</code>字段实际上是一个簇索引数组。</p>
 <h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><blockquote>
 <p>是什么</p>
 <p>为什么</p>
 <p>怎么做</p>
 </blockquote>
-<h3 id="附录一、操作系统概念"><a href="#附录一、操作系统概念" class="headerlink" title="附录一、操作系统概念"></a>附录一、操作系统概念</h3><h4 id="1-inode"><a href="#1-inode" class="headerlink" title="1. inode"></a>1. inode</h4><p><strong><code>inode</code></strong> 是文件系统中的数据结构，用于存储文件的元数据（权限、大小、时间戳等）和指向文件数据块的指针，但不包含文件的内容和文件名。</p>
+<h3 id="附录一、操作系统概念"><a href="#附录一、操作系统概念" class="headerlink" title="附录一、操作系统概念"></a>附录一、操作系统概念</h3><h4 id="1-inode-索引节点"><a href="#1-inode-索引节点" class="headerlink" title="1. inode 索引节点"></a>1. inode 索引节点</h4><p><strong><code>inode</code></strong> 是文件系统中的数据结构，用于存储文件的元数据（权限、大小、时间戳等）和指向文件数据块的指针，但不包含文件的内容和文件名。</p>
 <p>通过 <code>inode</code>，操作系统可以管理文件的存储和访问，允许文件通过硬链接共享同一个 <code>inode</code>。</p>
 <h4 id="2-OOM"><a href="#2-OOM" class="headerlink" title="2. OOM"></a>2. OOM</h4><p>即 <strong>内存不足（Out of Memory）</strong></p>
-<hr>
+<h4 id="3-VFS-虚拟文件系统"><a href="#3-VFS-虚拟文件系统" class="headerlink" title="3. VFS 虚拟文件系统"></a>3. VFS 虚拟文件系统</h4><p>![Linux文件系统结构](FS of NPUcore-LA&#x2F;Linux文件系统结构.png)</p>
+<p>如图所示，VFS在Linux内核中大概位于那么一个位置，用户态下应用（通常是IO操作）通过用户态调用进入到内核态，再通过内核态的文件系统相关的系统调用去调用VFS的各个方法，通过VFS，内核可以对不同类型的文件系统进行操作。</p>
+<p>如果没有VFS，用户对不同的文件系统执行同一个操作则需要复杂的、不同的操作。有了VFS之后，这些具体细节对于用户来说都是透明的——因为只需要跟VFS打交道，打开文件，告诉VFS去open一个文件就可以了，写一个文件，告诉VFS去write一个就可以了……</p>
+<p>VFS是一种软机制，只存在于内存中。什么意思呢，每次系统初始化期间Linux都会先在内存中构造一棵VFS目录树（在NPUcore中也就是<code>DirectryTreeNode</code>构成的树）</p>
+<p>通过VFS屏蔽底层的不同的调用方法，极大的方便了用户态下程序的编写。</p>
+<p>VFS提供了一个抽象层，将POSIX API接口与不同存储设备的具体接口进行了分离，使得底层的文件系统类型、设备类型对上层应用程序透明。</p>
+<h4 id="4-syscall-系统调用"><a href="#4-syscall-系统调用" class="headerlink" title="4. syscall 系统调用"></a>4. syscall 系统调用</h4><h4 id="5-block-device-块设备"><a href="#5-block-device-块设备" class="headerlink" title="5. block device 块设备"></a>5. block device 块设备</h4><hr>
 <h3 id="附录二、Rust-语言"><a href="#附录二、Rust-语言" class="headerlink" title="附录二、Rust 语言"></a>附录二、Rust 语言</h3><h4 id="1-Rust-基础"><a href="#1-Rust-基础" class="headerlink" title="1. Rust 基础"></a>1. Rust 基础</h4><h5 id="ref-与-的区别"><a href="#ref-与-的区别" class="headerlink" title="ref 与 &amp; 的区别"></a>ref 与 &amp; 的区别</h5><p><strong><code>&amp;</code></strong> 是用来创建引用的操作符，它在表达式中用于借用（不可变或可变）某个值。</p>
 <p><strong><code>ref</code></strong> 用于在模式匹配中解构时创建引用。它不会像 <code>&amp;</code> 那样直接在表达式中借用一个值，而是在解构的过程中通过 <code>ref</code> 获取对值的引用。</p>
 <h4 id="2-Rust-特征"><a href="#2-Rust-特征" class="headerlink" title="2. Rust 特征"></a>2. Rust 特征</h4><h5 id="Drop"><a href="#Drop" class="headerlink" title="Drop"></a>Drop</h5><h6 id="是什么"><a href="#是什么" class="headerlink" title="是什么"></a>是什么</h6><p>在 Rust 中，<code>Drop</code> 是一个特殊的 trait，它定义了对象销毁时需要执行的清理操作。</p>
@@ -658,6 +666,10 @@
 <p><code>remove</code> 相当于对对应位置零。</p>
 <h4 id="4-Rust-属性"><a href="#4-Rust-属性" class="headerlink" title="4. Rust 属性"></a>4. Rust 属性</h4><h5 id="1-repr-xxx-representation"><a href="#1-repr-xxx-representation" class="headerlink" title="1. #[repr(xxx)] (representation)"></a>1. #[repr(xxx)] (representation)</h5><p><code>#[repr]</code> 是 Rust 的一个属性，指定一个类型的内存布局（representation）。通过 <code>repr</code> 属性，Rust 允许你控制结构体、枚举、联合体或其他类型在内存中的布局，确保它们与其他语言（例如 C 语言）或者硬件接口的兼容性。</p>
 <p><code>#[repr(C)]</code> 是最常用的 <code>repr</code> 属性之一。它告诉 Rust 使用 C 语言的内存布局规则来布局结构体或枚举</p>
+<h5 id="2-feature-实验性功能"><a href="#2-feature-实验性功能" class="headerlink" title="2. #![feature()] 实验性功能"></a>2. #![feature()] 实验性功能</h5><p>通常写在<code>main.rs</code>或者<code>lib.rs</code>下，比方说启用向上转换功能：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs rust"><span class="hljs-comment">// 一般写在最上方</span><br><span class="hljs-meta">#![feature(trait_upcasting)]</span><br></code></pre></td></tr></table></figure>
+
+<p>一般来说，实验性功能必须使用<code>nightly</code>版本的rust，同时可以使用旧版本的<code>nightly</code>进行编译，这些功能可能在新版本中会因为稳定而加入稳定版也就是<code>stable</code>中，那么在新版本中就可以不用再进行<code>#![feature(xxx)]</code>编写来启用。但是有时候有些功能可能在新版本中是稳定了，但是在更新的版本中又从稳定版中被踢出，那么就要继续使用这个代码块来启用功能。当然，还有更不好的情况，就是这个实验性功能在新版本<strong>直接没掉了</strong>，所以个人建议最好是先别启用实验性功能，先看看有没有平替做法。</p>
 <h4 id="5-Rust-高阶"><a href="#5-Rust-高阶" class="headerlink" title="5. Rust 高阶"></a>5. Rust 高阶</h4><h5 id="1-Arc-Atomic-Reference-Counting"><a href="#1-Arc-Atomic-Reference-Counting" class="headerlink" title="1. Arc (Atomic Reference Counting)"></a>1. Arc (Atomic Reference Counting)</h5><p><code>Arc</code> 是一个线程安全的引用计数智能指针，允许多个线程共享对同一对象的所有权。当没有任何线程持有 <code>Arc</code> 时，资源会被自动释放。<code>Arc</code> 是为了在多线程环境中共享数据而设计的。</p>
 <h5 id="2-Weak-Weak-Reference"><a href="#2-Weak-Weak-Reference" class="headerlink" title="2. Weak (Weak Reference)"></a>2. Weak (Weak Reference)</h5><p>弱引用，不会增加引用计数</p>
 <p>包含的 <code>lock().upgrade()</code> 方法可以使其升级为一个强引用</p>
